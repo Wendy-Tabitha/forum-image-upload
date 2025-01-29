@@ -1,0 +1,68 @@
+:root {
+    --primary-color: #4A7C8C; /* Muted teal */
+    --secondary-color: #B8D8D2; /* Light mint */
+    --background-color: #F4F4F4; /* Soft gray */
+    --text-color: #333333; /* Dark gray for text */
+    --link-color: #2A4D69; /* Deep blue for links */
+    --border-color: #D1D1D1; /* Light gray for borders */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    color: var(--primary-color);
+}
+
+nav {
+    margin-bottom: 20px;
+}
+
+nav a {
+    color: var(--link-color);
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.post {
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: var(--secondary-color);
+}
+
+form {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 5px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #3A6B7A; /* Darker shade for hover effect */
+}

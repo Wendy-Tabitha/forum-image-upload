@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Forum - Home</title>
+</head>
+<body>
+    <h1>Welcome to the Forum</h1>
+    <nav>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        <a href="/post">Create Post</a>
+    </nav>
+    <h2>Posts</h2>
+    <div id="posts">
+        <!-- Here you would loop through posts and display them -->
+        {{range .Posts}}
+            <div class="post">
+                <h3>{{.Title}}</h3>
+                <p>{{.Content}}</p>
+                <p>Category: {{.Category}}</p>
+                <p>Likes: {{.Likes}} Dislikes: {{.Dislikes}}</p>
+            </div>
+        {{end}}
+    </div>
+</body>
+</html>
