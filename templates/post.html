@@ -7,33 +7,62 @@
     <title>Forum - Create Post</title>
 </head>
 <body>
-    <h1>Create a New Post</h1>
-    <form method="POST" action="/post">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required>
-        <br>
-        
-        <label for="content">Content:</label>
-        <textarea id="content" name="content" required></textarea>
-        <br>
-        
-        <label for="category">Category:</label>
-        <select id="category" name="category" required>
-            <option value="">Select a category</option>
-            <option value="technology">Technology</option>
-            <option value="general">General</option>
-            <option value="lifestyle">Lifestyle</option>
-            <option value="entertainment">Entertainment</option>
-            <option value="gaming">Gaming</option>
-            <option value="food">Food</option>
-            <option value="business">Business</option>
-            <option value="religion">Religion</option>
-            <option value="health">Health</option>
-        </select>
-        <br>
-        
-        <button type="submit">Post</button>
-        <button type="button" onclick="window.location.href='/'">Cancel</button>
-    </form>
+    <header>
+        <div class="logo">Forum</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+            <button type="button">Search</button>
+        </div>
+        <nav>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </nav>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Categories</h3>
+            <ul>
+                <li><a href="/filter?category=technology">Technology</a></li>
+                <li><a href="/filter?category=general">General</a></li>
+                <li><a href="/filter?category=lifestyle">Lifestyle</a></li>
+                <li><a href="/filter?category=entertainment">Entertainment</a></li>
+                <li><a href="/filter?category=gaming">Gaming</a></li>
+                <li><a href="/filter?category=food">Food</a></li>
+                <li><a href="/filter?category=business">Business</a></li>
+                <li><a href="/filter?category=religion">Religion</a></li>
+                <li><a href="/filter?category=health">Health</a></li>
+            </ul>
+        </aside>
+        <main>
+            <h1>Create a New Post</h1>
+            <form method="POST" action="/post">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
+                <br>
+                
+                <label for="content">Content:</label>
+                <textarea id="content" name="content" required></textarea>
+                <br>
+                
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="">Select a category</option>
+                    <option value="technology">Technology</option>
+                    <option value="general">General</option>
+                    <option value="lifestyle">Lifestyle</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="gaming">Gaming</option>
+                    <option value="food">Food</option>
+                    <option value="business">Business</option>
+                    <option value="religion">Religion</option>
+                    <option value="health">Health</option>
+                </select>
+                <br>
+                
+                <button type="submit">Post</button>
+                <button type="button" onclick="window.location.href='/'">Cancel</button>
+            </form>
+        </main>
+    </div>
 </body>
 </html>

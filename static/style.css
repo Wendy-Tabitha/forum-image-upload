@@ -66,3 +66,50 @@ button {
 button:hover {
     background-color: #3A6B7A; /* Darker shade for hover effect */
 }
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.search-bar {
+    flex-grow: 1;
+    margin: 0 20px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 5px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+}
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #eaeaea;
+    padding: 15px;
+}

@@ -7,23 +7,47 @@
     <title>Forum - Home</title>
 </head>
 <body>
-    <h1>Welcome to the Forum</h1>
-    <nav>
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
-        <a href="/post">Create Post</a>
-    </nav>
-    <h2>Posts</h2>
-    <div id="posts">
-        <!-- Here you would loop through posts and display them -->
-        {{range .Posts}}
-            <div class="post">
-                <h3>{{.Title}}</h3>
-                <p>{{.Content}}</p>
-                <p>Category: {{.Category}}</p>
-                <p>Likes: {{.Likes}} Dislikes: {{.Dislikes}}</p>
+    <header>
+        <div class="logo">Forum</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+            <button type="button">Search</button>
+        </div>
+        <nav>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </nav>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Categories</h3>
+            <ul>
+                <li><a href="/filter?category=technology">Technology</a></li>
+                <li><a href="/filter?category=general">General</a></li>
+                <li><a href="/filter?category=lifestyle">Lifestyle</a></li>
+                <li><a href="/filter?category=entertainment">Entertainment</a></li>
+                <li><a href="/filter?category=gaming">Gaming</a></li>
+                <li><a href="/filter?category=food">Food</a></li>
+                <li><a href="/filter?category=business">Business</a></li>
+                <li><a href="/filter?category=religion">Religion</a></li>
+                <li><a href="/filter?category=health">Health</a></li>
+            </ul>
+        </aside>
+        <main>
+            <h1>All Posts</h1>
+            <div id="posts">
+                {{range .Posts}}
+                    <div class="post">
+                        <h3>{{.Title}}</h3>
+                        <p>{{.Content}}</p>
+                        <p>Category: {{.Category}}</p>
+                    </div>
+                {{else}}
+                    <p>No posts available.</p>
+                {{end}}
             </div>
-        {{end}}
+            <a href="/post" class="create-post-button">Create Post</a>
+        </main>
     </div>
 </body>
 </html>
