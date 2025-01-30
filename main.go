@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"forum/handlers"
 )
 
 func main() {
@@ -10,15 +12,15 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	// Define routes
-	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/login", loginHandler)
-	http.HandleFunc("/register", registerHandler)
-	http.HandleFunc("/post", postHandler)
-	http.HandleFunc("/like", likeHandler)
-	http.HandleFunc("/filter", filterHandler)
+	http.HandleFunc("/", handlers.HomeHandler)
+	http.HandleFunc("/login", handlers.LoginHandler)
+	http.HandleFunc("/register", handlers.RegisterHandler)
+	http.HandleFunc("/post", handlers.PostHandler)
+	http.HandleFunc("/like", handlers.LikeHandler)
+	http.HandleFunc("/filter", handlers.FilterHandler)
 
 	// Initialize the database
-	initDB()
+	handlers.InitDB()
 
 	// Start the server
 	log.Println("Server is running on http://localhost:8080")

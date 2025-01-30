@@ -34,13 +34,17 @@ nav a:hover {
 }
 
 .post {
-    border: 1px solid var(--border-color);
+    /* border: 1px solid var(--border-color); */
     padding: 20px;
     margin-bottom: 20px;
-    background-color: var(--secondary-color);
+    background-color: white;
     border-radius: 5px;
     width: 100%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(179, 179, 179, 0.1);
+}
+
+.post:hover {
+    box-shadow: 0 2px 4px rgba(36, 36, 36, 0.1);
 }
 
 form {
@@ -126,11 +130,12 @@ nav a {
 
 .sidebar {
     width: 200px;
-    background-color: #eaeaea;
+    background-color: white;
     padding: 15px;
     position: sticky;
     top: 80px; /* Accounts for header height + some spacing */
     height: fit-content;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 main {
@@ -169,12 +174,15 @@ main {
 }
 
 .create-post {
-    background-color: #28a745;
-    border: 1px solid #28a745;
+    background-color: var(--primary-color);
+    color: white;
+    margin-top: 10px;
+    margin-right: 50px;
+    /* border: 1px solid #28a745; */
 }
 
 .create-post:hover {
-    background-color: #218838;
+    background-color: var(--link-color);
 }
 
 /* Remove the old create-post-button styles if they exist */
@@ -363,12 +371,12 @@ main {
 }
 
 #createPostForm button[type="submit"] {
-    background-color: #28a745;
+    background-color: var(--primary-color);
     color: white;
 }
 
 #createPostForm button[type="submit"]:hover {
-    background-color: #218838;
+    background-color: var(--link-color);
 }
 
 #createPostForm button[type="button"] {
