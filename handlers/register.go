@@ -46,6 +46,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl := template.Must(template.ParseFiles("templates/register.html"))
+	tmpl, err := template.ParseFiles("templates/register.html")
+	if err != nil {
+		http.Error(w, "Error parsing file", http.StatusInternalServerError)
+		return
+	}
 	tmpl.Execute(w, nil)
 }

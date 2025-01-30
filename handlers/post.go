@@ -41,7 +41,11 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Render the post page with posts
-	tmpl := template.Must(template.ParseFiles("templates/post.html"))
+	tmpl, err := template.ParseFiles("templates/post.html")
+	if err != nil {
+		http.Error(w, "Error parsing file", http.StatusInternalServerError)
+		return
+	}
 	tmpl.Execute(w, map[string]interface{}{
 		"Posts": posts,
 	})

@@ -10,7 +10,11 @@ import (
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		tmpl := template.Must(template.ParseFiles("templates/login.html"))
+		tmpl, err := template.ParseFiles("templates/login.html")
+		if err != nil {
+			http.Error(w, "Error parsing file", http.StatusInternalServerError)
+			return
+		}
 		tmpl.Execute(w, nil)
 		return
 	} else if r.Method == http.MethodPost {

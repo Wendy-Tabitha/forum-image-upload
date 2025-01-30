@@ -25,7 +25,11 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Render the index page with posts
-	tmpl := template.Must(template.ParseFiles("templates/home.html"))
+	tmpl, err := template.ParseFiles("templates/home.html")
+	if err != nil {
+		http.Error(w, "Error parsing file", http.StatusInternalServerError)
+		return
+	}
 	tmpl.Execute(w, map[string]interface{}{
 		"Posts": posts,
 	})
