@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
     <title>Forum - Posts</title>
 </head>
+
 <body>
     <header>
         <div class="logo">
@@ -23,15 +25,16 @@
         <aside class="sidebar">
             <h3>Categories</h3>
             <ul>
-                <li><a href="/filter?category=technology">Technology</a></li>
-                <li><a href="/filter?category=general">General</a></li>
-                <li><a href="/filter?category=lifestyle">Lifestyle</a></li>
-                <li><a href="/filter?category=entertainment">Entertainment</a></li>
-                <li><a href="/filter?category=gaming">Gaming</a></li>
-                <li><a href="/filter?category=food">Food</a></li>
-                <li><a href="/filter?category=business">Business</a></li>
-                <li><a href="/filter?category=religion">Religion</a></li>
-                <li><a href="/filter?category=health">Health</a></li>
+                <li><a href="#" onclick="filterByCategory('all')">All Posts</a></li>
+                <li><a href="#" onclick="filterByCategory('technology')">Technology</a></li>
+                <li><a href="#" onclick="filterByCategory('general')">General</a></li>
+                <li><a href="#" onclick="filterByCategory('lifestyle')">Lifestyle</a></li>
+                <li><a href="#" onclick="filterByCategory('entertainment')">Entertainment</a></li>
+                <li><a href="#" onclick="filterByCategory('gaming')">Gaming</a></li>
+                <li><a href="#" onclick="filterByCategory('food')">Food</a></li>
+                <li><a href="#" onclick="filterByCategory('business')">Business</a></li>
+                <li><a href="#" onclick="filterByCategory('religion')">Religion</a></li>
+                <li><a href="#" onclick="filterByCategory('health')">Health</a></li>
             </ul>
             <div class="sidebar-footer">
                 <a href="/" class="logout-link">Logout</a>
@@ -45,11 +48,11 @@
                     <label for="title">Title:</label>
                     <input type="text" id="title" name="title" required>
                     <br>
-                    
+
                     <label for="content">Content:</label>
                     <textarea id="content" name="content" required></textarea>
                     <br>
-                    
+
                     <label for="category">Category:</label>
                     <select id="category" name="category" required>
                         <option value="">Select a category</option>
@@ -64,29 +67,26 @@
                         <option value="health">Health</option>
                     </select>
                     <br>
-                    
+
                     <button type="submit">Post</button>
                     <button type="button" onclick="toggleCreatePost()">Cancel</button>
                 </form>
             </div>
 
             <!-- Posts List (Shown by default) -->
-            <div id="postsList">
-                <div class="posts-header">
-                    <h1>All Posts</h1>
-                    <div id="currentCategory"></div>
+            <h1 id="postsHeading">All Posts</h1>
+            <div id="posts">
+                {{if .Posts}}
+                {{range .Posts}}
+                <div class="post" data-category="{{.Category}}">
+                    <h3>{{.Title}}</h3>
+                    <p>{{.Content}}</p>
+                    <p>Category: {{.Category}}</p>
                 </div>
-                <div id="posts">
-                    {{range .Posts}}
-                        <div class="post" data-category="{{.Category}}">
-                            <h3>{{.Title}}</h3>
-                            <p>{{.Content}}</p>
-                            <p>Category: {{.Category}}</p>
-                        </div>
-                    {{else}}
-                        <p>No posts available.</p>
-                    {{end}}
-                </div>
+                {{end}}
+                {{else}}
+                <p>No posts available.</p>
+                {{end}}
             </div>
         </main>
     </div>
@@ -94,21 +94,24 @@
     <script>
         function toggleCreatePost() {
             const createPostForm = document.getElementById('createPostForm');
-            const postsList = document.getElementById('postsList');
-            
+            const postsList = document.getElementById('posts');
+            const postsHeading = document.getElementById('postsHeading');
+
             if (createPostForm.style.display === 'none') {
                 createPostForm.style.display = 'block';
                 postsList.style.display = 'none';
+                postsHeading.style.display = 'none'; // Hide the heading when the form is shown
             } else {
                 createPostForm.style.display = 'none';
                 postsList.style.display = 'block';
+                postsHeading.style.display = 'block'; // Show the heading when the form is hidden
             }
         }
 
         function filterByCategory(category) {
             const posts = document.querySelectorAll('.post');
-            const currentCategory = document.getElementById('currentCategory');
-            
+            const postsHeading = document.getElementById('postsHeading');
+
             posts.forEach(post => {
                 if (category === 'all' || post.getAttribute('data-category').toLowerCase() === category.toLowerCase()) {
                     post.style.display = 'block';
@@ -117,15 +120,16 @@
                 }
             });
 
-            const h1 = document.querySelector('main h1');
+            // Update the heading based on the selected category
             if (category === 'all') {
-                h1.textContent = 'All Posts';
+                postsHeading.textContent = 'All Posts';
             } else {
-                h1.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Posts';
+                postsHeading.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Posts';
             }
 
-            return false;
+            return false; // Prevent default link behavior
         }
     </script>
 </body>
+
 </html>
