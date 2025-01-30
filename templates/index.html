@@ -8,36 +8,39 @@
 </head>
 <body>
     <header>
-        <div class="logo">Forum</div>
+        <div class="logo">
+            <a href="/" class="logo-link">Forum</a>
+        </div>
         <div class="search-bar">
             <input type="text" placeholder="Search...">
             <button type="button">Search</button>
         </div>
         <nav>
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
+            <a href="/login" class="auth-button login">Login</a>
+            <a href="/register" class="auth-button register">Register</a>
         </nav>
     </header>
     <div class="container">
         <aside class="sidebar">
             <h3>Categories</h3>
             <ul>
-                <li><a href="/filter?category=technology">Technology</a></li>
-                <li><a href="/filter?category=general">General</a></li>
-                <li><a href="/filter?category=lifestyle">Lifestyle</a></li>
-                <li><a href="/filter?category=entertainment">Entertainment</a></li>
-                <li><a href="/filter?category=gaming">Gaming</a></li>
-                <li><a href="/filter?category=food">Food</a></li>
-                <li><a href="/filter?category=business">Business</a></li>
-                <li><a href="/filter?category=religion">Religion</a></li>
-                <li><a href="/filter?category=health">Health</a></li>
+                <li><a href="#" onclick="filterByCategory('all')">All Posts</a></li>
+                <li><a href="#" onclick="filterByCategory('technology')">Technology</a></li>
+                <li><a href="#" onclick="filterByCategory('general')">General</a></li>
+                <li><a href="#" onclick="filterByCategory('lifestyle')">Lifestyle</a></li>
+                <li><a href="#" onclick="filterByCategory('entertainment')">Entertainment</a></li>
+                <li><a href="#" onclick="filterByCategory('gaming')">Gaming</a></li>
+                <li><a href="#" onclick="filterByCategory('food')">Food</a></li>
+                <li><a href="#" onclick="filterByCategory('business')">Business</a></li>
+                <li><a href="#" onclick="filterByCategory('religion')">Religion</a></li>
+                <li><a href="#" onclick="filterByCategory('health')">Health</a></li>
             </ul>
         </aside>
         <main>
             <h1>All Posts</h1>
             <div id="posts">
                 {{range .Posts}}
-                    <div class="post">
+                    <div class="post" data-category="{{.Category}}">
                         <h3>{{.Title}}</h3>
                         <p>{{.Content}}</p>
                         <p>Category: {{.Category}}</p>
@@ -46,8 +49,32 @@
                     <p>No posts available.</p>
                 {{end}}
             </div>
-            <a href="/post" class="create-post-button">Create Post</a>
         </main>
     </div>
+
+    <script>
+        function filterByCategory(category) {
+            const posts = document.querySelectorAll('.post');
+            
+            posts.forEach(post => {
+                if (category === 'all') {
+                    post.style.display = 'block';  // Show all posts when 'all' is selected
+                } else if (post.getAttribute('data-category').toLowerCase() === category.toLowerCase()) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+
+            const h1 = document.querySelector('main h1');
+            if (category === 'all') {
+                h1.textContent = 'All Posts';
+            } else {
+                h1.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Posts';
+            }
+
+            return false;  // Prevent default link behavior
+        }
+    </script>
 </body>
 </html>

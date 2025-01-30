@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
-    <title>Forum - Create Post</title>
+    <title>Forum - Posts</title>
 </head>
 <body>
     <header>
-        <div class="logo">Forum</div>
+        <div class="logo">
+            <a href="/" class="logo-link">Forum</a>
+        </div>
         <div class="search-bar">
             <input type="text" placeholder="Search...">
             <button type="button">Search</button>
         </div>
         <nav>
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
+            <a href="#" class="auth-button create-post" onclick="toggleCreatePost()">Create Post</a>
         </nav>
     </header>
     <div class="container">
@@ -32,37 +33,99 @@
                 <li><a href="/filter?category=religion">Religion</a></li>
                 <li><a href="/filter?category=health">Health</a></li>
             </ul>
+            <div class="sidebar-footer">
+                <a href="/" class="logout-link">Logout</a>
+            </div>
         </aside>
         <main>
-            <h1>Create a New Post</h1>
-            <form method="POST" action="/post">
-                <label for="title">Title:</label>
-                <input type="text" id="title" name="title" required>
-                <br>
-                
-                <label for="content">Content:</label>
-                <textarea id="content" name="content" required></textarea>
-                <br>
-                
-                <label for="category">Category:</label>
-                <select id="category" name="category" required>
-                    <option value="">Select a category</option>
-                    <option value="technology">Technology</option>
-                    <option value="general">General</option>
-                    <option value="lifestyle">Lifestyle</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="gaming">Gaming</option>
-                    <option value="food">Food</option>
-                    <option value="business">Business</option>
-                    <option value="religion">Religion</option>
-                    <option value="health">Health</option>
-                </select>
-                <br>
-                
-                <button type="submit">Post</button>
-                <button type="button" onclick="window.location.href='/'">Cancel</button>
-            </form>
+            <!-- Create Post Form (Hidden by default) -->
+            <div id="createPostForm" style="display: none;">
+                <h1>Create a New Post</h1>
+                <form method="POST" action="/post">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" required>
+                    <br>
+                    
+                    <label for="content">Content:</label>
+                    <textarea id="content" name="content" required></textarea>
+                    <br>
+                    
+                    <label for="category">Category:</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="technology">Technology</option>
+                        <option value="general">General</option>
+                        <option value="lifestyle">Lifestyle</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="food">Food</option>
+                        <option value="business">Business</option>
+                        <option value="religion">Religion</option>
+                        <option value="health">Health</option>
+                    </select>
+                    <br>
+                    
+                    <button type="submit">Post</button>
+                    <button type="button" onclick="toggleCreatePost()">Cancel</button>
+                </form>
+            </div>
+
+            <!-- Posts List (Shown by default) -->
+            <div id="postsList">
+                <div class="posts-header">
+                    <h1>All Posts</h1>
+                    <div id="currentCategory"></div>
+                </div>
+                <div id="posts">
+                    {{range .Posts}}
+                        <div class="post" data-category="{{.Category}}">
+                            <h3>{{.Title}}</h3>
+                            <p>{{.Content}}</p>
+                            <p>Category: {{.Category}}</p>
+                        </div>
+                    {{else}}
+                        <p>No posts available.</p>
+                    {{end}}
+                </div>
+            </div>
         </main>
     </div>
+
+    <script>
+        function toggleCreatePost() {
+            const createPostForm = document.getElementById('createPostForm');
+            const postsList = document.getElementById('postsList');
+            
+            if (createPostForm.style.display === 'none') {
+                createPostForm.style.display = 'block';
+                postsList.style.display = 'none';
+            } else {
+                createPostForm.style.display = 'none';
+                postsList.style.display = 'block';
+            }
+        }
+
+        function filterByCategory(category) {
+            const posts = document.querySelectorAll('.post');
+            const currentCategory = document.getElementById('currentCategory');
+            
+            posts.forEach(post => {
+                if (category === 'all' || post.getAttribute('data-category').toLowerCase() === category.toLowerCase()) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+
+            const h1 = document.querySelector('main h1');
+            if (category === 'all') {
+                h1.textContent = 'All Posts';
+            } else {
+                h1.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Posts';
+            }
+
+            return false;
+        }
+    </script>
 </body>
 </html>

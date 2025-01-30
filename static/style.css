@@ -12,7 +12,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     margin: 0;
-    padding: 20px;
+    padding: 0;
 }
 
 h1, h2, h3 {
@@ -35,9 +35,12 @@ nav a:hover {
 
 .post {
     border: 1px solid var(--border-color);
-    padding: 15px;
+    padding: 20px;
     margin-bottom: 20px;
     background-color: var(--secondary-color);
+    border-radius: 5px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 form {
@@ -75,41 +78,313 @@ body {
 }
 
 header {
-    background-color: #333;
-    color: white;
+    background-color: white;
+    color: var(--text-color);
     padding: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .logo {
     font-size: 24px;
     font-weight: bold;
+    color: var(--primary-color);
 }
 
 .search-bar {
-    flex-grow: 1;
+    flex-grow: 0;
     margin: 0 20px;
+    width: 300px;
 }
 
 .search-bar input {
-    width: 100%;
-    padding: 5px;
+    width: 200px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
 }
 
 nav a {
-    color: white;
+    color: var(--text-color);
     text-decoration: none;
     margin-left: 15px;
 }
 
 .container {
     display: flex;
+    margin-top: 20px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 20px;
 }
 
 .sidebar {
     width: 200px;
     background-color: #eaeaea;
     padding: 15px;
+    position: sticky;
+    top: 80px; /* Accounts for header height + some spacing */
+    height: fit-content;
+}
+
+main {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.auth-button {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+}
+
+.login {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.login:hover {
+    background-color: rgba(74, 124, 140, 0.1);
+}
+
+.register {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.register:hover {
+    background-color: #3A6B7A;
+}
+
+.create-post {
+    background-color: #28a745;
+    border: 1px solid #28a745;
+}
+
+.create-post:hover {
+    background-color: #218838;
+}
+
+/* Remove the old create-post-button styles if they exist */
+.create-post-button {
+    display: none;
+}
+
+.sidebar-footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.logout-link {
+    background-color: rgb(204, 204, 204);
+    color: var(--text-color);  /* Red color for logout */
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    padding: 8px 0;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.logout-link:hover {
+    color: #bd2130;  /* Darker red on hover */
+    text-decoration: none;
+}
+
+/* Category link styles */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 8px;
+}
+
+.sidebar ul li a {
+    display: block;
+    padding: 8px;
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+    background-color: rgb(204, 204, 204);
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+.auth-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.auth-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+}
+
+.auth-container form {
+    background-color: transparent;
+    padding: 0;
+}
+
+.auth-container input {
+    margin-bottom: 20px;
+}
+
+.auth-container button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    font-size: 16px;
+}
+
+.auth-container p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-container a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.auth-container a:hover {
+    text-decoration: underline;
+}
+
+.logo-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo-link:hover {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+.posts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#currentCategory {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.post[data-category] {
+    transition: all 0.3s ease;
+}
+
+/* Create Post Form Styles */
+#createPostForm {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+#createPostForm h1 {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--primary-color);
+}
+
+#createPostForm form {
+    background-color: transparent;
+    padding: 0;
+    max-width: 90%;
+    margin: 0 auto;
+}
+
+#createPostForm label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+#createPostForm input,
+#createPostForm textarea,
+#createPostForm select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+#createPostForm textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+#createPostForm select {
+    cursor: pointer;
+}
+
+#createPostForm button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+#createPostForm button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+}
+
+#createPostForm button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+#createPostForm button[type="button"] {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+#createPostForm button[type="button"]:hover {
+    background-color: #f5f5f5;
+}
+
+/* Form actions container */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }
