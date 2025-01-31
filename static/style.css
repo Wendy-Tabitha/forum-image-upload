@@ -148,7 +148,7 @@ main {
     padding: 0 20px;
 }
 
-main h1 {
+#postsHeading {
     background-color: #fff;
     padding: 20px;
     width: 100%;
