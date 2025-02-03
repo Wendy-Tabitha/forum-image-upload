@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/google/uuid" // Import UUID package
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -35,14 +36,17 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Generate a new UUID for the user
+		userID := uuid.New().String()
+
 		// Insert new user into the database
-		_, err = db.Exec("INSERT INTO users (email, username, password) VALUES (?, ?, ?)", email, username, hashedPassword)
+		_, err = db.Exec("INSERT INTO users (id, email, username, password) VALUES (?, ?, ?, ?)", userID, email, username, hashedPassword)
 		if err != nil {
-			http.Error(w, "Error creating user", http.StatusInternalServerError)
+			http.Error(w, "Error creating user: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		http.Redirect(w, r, "/post", http.StatusSeeOther)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 

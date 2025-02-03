@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -34,12 +35,32 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Check if the user is already logged in
+		var existingSessionID string
+		err = db.QueryRow("SELECT session_id FROM sessions WHERE user_id = ?", user.ID).Scan(&existingSessionID)
+		if err == nil {
+			_, err = db.Exec("DELETE FROM sessions WHERE user_id = ?", user.ID)
+			if err != nil {
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+		}
+		sessionID := uuid.New().String()
+
 		// Set session cookie
 		http.SetCookie(w, &http.Cookie{
 			Name:    "session_id",
-			Value:   "some_unique_session_id",       // You should generate a unique session ID
+			Value:   sessionID,                        // Use the UUID as the session ID
 			Expires: time.Now().Add(24 * time.Hour), // Set expiration
 		})
+
+		// Store session in the database
+		_, err = db.Exec("INSERT INTO sessions (session_id, user_id) VALUES (?, ?)", sessionID, user.ID)
+		if err != nil {
+			http.Error(w, "Error creating session", http.StatusInternalServerError)
+			return
+		}
 
 		http.Redirect(w, r, "/post", http.StatusSeeOther)
 		return
