@@ -40,7 +40,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Redirect back to the home page after creating the post
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/post", http.StatusSeeOther)
 		return
 	}
 
