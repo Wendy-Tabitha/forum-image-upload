@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Font Awesome -->
     <title>Forum - Posts</title>
 </head>
 
@@ -43,7 +45,7 @@
             </ul>
             <div class="sidebar-footer">
                 {{if .IsLoggedIn}} <!-- Only show logout link if user is logged in -->
-                    <a href="/logout" class="logout-link">Logout</a>
+                <a href="/logout" class="logout-link">Logout</a>
                 {{end}}
             </div>
         </aside>
@@ -88,10 +90,30 @@
                 {{if .Posts}}
                 {{range .Posts}}
                 <div class="post" data-category="{{.Category}}">
-                    <strong><p>{{.Username}}</p></strong>
+                    <strong>
+                        <p>{{.Username}}</p>
+                    </strong>
                     <h3>{{.Title}}</h3>
                     <p>{{.Content}}</p>
                     <p>Category: {{.Category}}</p>
+                    <div class="post-actions">
+                        <button class="like-button" onclick="toggleLike('{{.ID}}', true)">
+                            <i class="fas fa-thumbs-up"></i> Like
+                        </button>
+                        <button class="dislike-button" onclick="toggleLike('{{.ID}}', false)">
+                            <i class="fas fa-thumbs-down"></i> Dislike
+                        </button>
+                        <button class="comment-button" onclick="toggleCommentForm('{{.ID}}')">
+                            <i class="fas fa-comment"></i> Comment
+                        </button>
+                    </div>
+                    <div class="comment-form" id="comment-form-{{.ID}}" style="display: none;">
+                        <form method="POST" action="/comment">
+                            <input type="hidden" name="post_id" value="{{.ID}}">
+                            <textarea name="comment" placeholder="Write your comment..." required></textarea>
+                            <button type="submit">Post Comment</button>
+                        </form>
+                    </div>
                 </div>
                 {{end}}
                 {{else}}
@@ -138,6 +160,15 @@
             }
 
             return false; // Prevent default link behavior
+        }
+
+        function toggleCommentForm(postId) {
+            const commentForm = document.getElementById(`comment-form-${postId}`);
+            if (commentForm.style.display === 'none') {
+                commentForm.style.display = 'block';
+            } else {
+                commentForm.style.display = 'none';
+            }
         }
     </script>
 </body>
