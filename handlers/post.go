@@ -26,13 +26,11 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
 	if r.Method == http.MethodPost {
 		title := r.FormValue("title")
 		content := r.FormValue("content")
 		category := r.FormValue("category")
-
-		// Get user ID from session (you should implement session management)
-		userID := 1 // Replace with actual user ID from session
 
 		// Insert the new post into the database
 		_, err := db.Exec("INSERT INTO posts (user_id, title, content, category) VALUES (?, ?, ?, ?)", userID, title, content, category)
@@ -40,6 +38,10 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error creating post", http.StatusInternalServerError)
 			return
 		}
+
+		// Redirect back to the home page after creating the post
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 
 	// Query to fetch all posts
@@ -60,13 +62,14 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		posts = append(posts, post)
 	}
 
-	// Render the post page with posts
-	tmpl, err := template.ParseFiles("templates/post.html")
+	// Render the home page with posts
+	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
 		http.Error(w, "Error parsing file", http.StatusInternalServerError)
 		return
 	}
 	tmpl.Execute(w, map[string]interface{}{
-		"Posts": posts,
+		"Posts":      posts,
+		"IsLoggedIn": userID != "", // Check if user is logged in
 	})
 }
