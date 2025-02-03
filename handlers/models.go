@@ -15,6 +15,7 @@ type Post struct {
 	Title    string
 	Content  string
 	Category string
+	Username string // New field for the user's name
 }
 
 // Comment represents a comment on a post
