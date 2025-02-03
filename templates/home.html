@@ -90,6 +90,7 @@
                 {{if .Posts}}
                 {{range .Posts}}
                 <div class="post" data-category="{{.Category}}">
+                    <p class="posted-on">Posted on: {{.CreatedAt}}</p>
                     <strong>
                         <p>{{.Username}}</p>
                     </strong>
