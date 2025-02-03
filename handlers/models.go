@@ -2,7 +2,7 @@ package handlers
 
 // User represents a user in the system
 type User struct {
-	ID       string // Changed from int to string for UUID support
+	ID       string 
 	Email    string
 	Username string
 	Password string
@@ -11,23 +11,24 @@ type User struct {
 // Post represents a post in the forum
 type Post struct {
 	ID       int
-	UserID   string // Changed from int to string for UUID support
+	UserID   string 
 	Title    string
 	Content  string
 	Category string
-	Username string // New field for the user's name
+	Username string 
+	CreatedAt string
 }
 
 // Comment represents a comment on a post
 type Comment struct {
 	ID      int
 	PostID  int
-	UserID  string // Changed from int to string for UUID support
+	UserID  string 
 	Content string
 }
 
 // Session represents a user session
 type Session struct {
-	SessionID string // Unique session identifier
-	UserID    string // User ID associated with the session (UUID)
+	SessionID string 
+	UserID    string
 }

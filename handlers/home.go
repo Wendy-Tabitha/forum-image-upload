@@ -6,8 +6,9 @@ import (
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	// Query to fetch all posts along with the user's name
-	rows, err := db.Query(`SELECT p.id, p.title, p.content, p.category, u.username FROM posts p JOIN users u ON p.user_id = u.id`)
+	// Query to fetch all posts along with the user's name and creation time, ordered by created_at descending
+	rows, err := db.Query(`SELECT p.id, p.title, p.content, p.category, u.username, 
+	p.created_at FROM posts p JOIN users u ON p.user_id = u.id ORDER BY p.created_at DESC`) // Order by created_at descending
 	if err != nil {
 		http.Error(w, "Error fetching posts", http.StatusInternalServerError)
 		return
@@ -17,13 +18,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	var posts []Post
 	for rows.Next() {
 		var post Post
-		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Category, &post.Username); err != nil {
+		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Category, &post.Username, &post.CreatedAt); err != nil {
 			http.Error(w, "Error scanning posts", http.StatusInternalServerError)
 			return
 		}
 		posts = append(posts, post)
 	}
-
 	// Render the index page with posts
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
