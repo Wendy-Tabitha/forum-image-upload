@@ -44,8 +44,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Query to fetch all posts
-	rows, err := db.Query("SELECT id, title, content, category FROM posts")
+	// Query to fetch all posts along with the user's name
+	rows, err := db.Query(`SELECT p.id, p.title, p.content, p.category, u.username FROM posts p JOIN users u ON p.user_id = u.id`)
 	if err != nil {
 		http.Error(w, "Error fetching posts", http.StatusInternalServerError)
 		return
@@ -55,7 +55,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	var posts []Post
 	for rows.Next() {
 		var post Post
-		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Category); err != nil {
+		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Category, &post.Username); err != nil {
 			http.Error(w, "Error scanning posts", http.StatusInternalServerError)
 			return
 		}

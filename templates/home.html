@@ -89,6 +89,7 @@
                 {{range .Posts}}
                 <div class="post" data-category="{{.Category}}">
                     <h3>{{.Title}}</h3>
+                    <strong><p>Posted by: {{.Username}}</p></strong> <!-- Display the user's name -->
                     <p>{{.Content}}</p>
                     <p>Category: {{.Category}}</p>
                 </div>
