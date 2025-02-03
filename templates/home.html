@@ -88,8 +88,8 @@
                 {{if .Posts}}
                 {{range .Posts}}
                 <div class="post" data-category="{{.Category}}">
+                    <strong><p>{{.Username}}</p></strong>
                     <h3>{{.Title}}</h3>
-                    <strong><p>Posted by: {{.Username}}</p></strong> <!-- Display the user's name -->
                     <p>{{.Content}}</p>
                     <p>Category: {{.Category}}</p>
                 </div>
