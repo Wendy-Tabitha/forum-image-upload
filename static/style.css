@@ -1,10 +1,16 @@
 :root {
-    --primary-color: #4A7C8C; /* Muted teal */
-    --secondary-color: #B8D8D2; /* Light mint */
-    --background-color: #F4F4F4; /* Soft gray */
-    --text-color: #333333; /* Dark gray for text */
-    --link-color: #2A4D69; /* Deep blue for links */
-    --border-color: #D1D1D1; /* Light gray for borders */
+    --primary-color: #4A7C8C;
+    /* Muted teal */
+    --secondary-color: #B8D8D2;
+    /* Light mint */
+    --background-color: #F4F4F4;
+    /* Soft gray */
+    --text-color: #333333;
+    /* Dark gray for text */
+    --link-color: #2A4D69;
+    /* Deep blue for links */
+    --border-color: #D1D1D1;
+    /* Light gray for borders */
 }
 
 body {
@@ -15,7 +21,9 @@ body {
     padding: 0;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     color: var(--primary-color);
 }
 
@@ -55,7 +63,8 @@ form {
     border-radius: 5px;
 }
 
-input, textarea {
+input,
+textarea {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
@@ -73,7 +82,8 @@ button {
 }
 
 button:hover {
-    background-color: #3A6B7A; /* Darker shade for hover effect */
+    background-color: #3A6B7A;
+    /* Darker shade for hover effect */
 }
 
 body {
@@ -93,7 +103,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
@@ -135,9 +145,10 @@ nav a {
     background-color: white;
     padding: 15px;
     position: sticky;
-    top: 80px; /* Accounts for header height + some spacing */
+    top: 80px;
+    /* Accounts for header height + some spacing */
     height: fit-content;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
 }
 
@@ -211,7 +222,8 @@ main {
 
 .logout-link {
     background-color: rgb(204, 204, 204);
-    color: var(--text-color);  /* Red color for logout */
+    color: var(--text-color);
+    /* Red color for logout */
     border-radius: 8px;
     text-align: center;
     text-decoration: none;
@@ -222,7 +234,8 @@ main {
 }
 
 .logout-link:hover {
-    color: #bd2130;  /* Darker red on hover */
+    color: #bd2130;
+    /* Darker red on hover */
     text-decoration: none;
 }
 
@@ -349,10 +362,15 @@ main {
 }
 
 #createPostForm label {
-    display: block;
+    display: flex;
     margin-bottom: 8px;
     color: var(--text-color);
     font-weight: 500;
+    flex-direction: row;
+    align-items: first baseline;
+    align-content: space-between;
+    text-align: center;
+    margin: 10px;
 }
 
 #createPostForm input,
@@ -411,7 +429,28 @@ main {
 }
 
 .posted-on {
-    font-size: 0.8em; /* Smaller font size */
-    text-align: right; /* Align text to the right */
-    color: #666; /* Optional: Change color for better visibility */
+    font-size: 0.8em;
+    /* Smaller font size */
+    text-align: right;
+    /* Align text to the right */
+    color: #666;
+    /* Optional: Change color for better visibility */
+}
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allows wrapping to the next line if necessary */
+    /* gap: 10px; /* Space between checkboxes */
+}
+
+*/ .checkbox-group label {
+    display: flex;
+    align-items: center;
+    /* Aligns checkbox and label text */
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+    /* Space between the checkbox and the label text */
 }
