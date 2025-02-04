@@ -17,6 +17,15 @@ type Post struct {
 	Category string
 	Username string 
 	CreatedAt string
+	LikeCount   int // Number of likes
+	DislikeCount int
+}
+
+type Like struct {
+	ID     int
+	UserID string // User who liked/disliked the post
+	PostID int    // Post that was liked/disliked
+	IsLike bool   // true for like, false for dislike
 }
 
 // Comment represents a comment on a post
