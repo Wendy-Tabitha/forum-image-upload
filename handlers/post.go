@@ -44,9 +44,23 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Query to fetch all posts along with the user's name and creation time, ordered by created_at descending
-	rows, err := db.Query(`SELECT p.id, p.title, p.content, p.category, u.username, 
-	p.created_at FROM posts p JOIN users u ON p.user_id = u.id ORDER BY p.created_at DESC`) // Order by created_at descending
+	// Query to fetch all posts along with the user's name, creation time, and like/dislike counts
+	rows, err := db.Query(`
+		SELECT 
+			p.id, 
+			p.title, 
+			p.content, 
+			p.category, 
+			u.username, 
+			p.created_at,
+			COALESCE(SUM(l.is_like = 1), 0) AS like_count,
+			COALESCE(SUM(l.is_like = 0), 0) AS dislike_count
+		FROM posts p
+		JOIN users u ON p.user_id = u.id
+		LEFT JOIN likes l ON p.id = l.post_id
+		GROUP BY p.id
+		ORDER BY p.created_at DESC
+	`)
 	if err != nil {
 		http.Error(w, "Error fetching posts", http.StatusInternalServerError)
 		return
@@ -56,7 +70,16 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	var posts []Post
 	for rows.Next() {
 		var post Post
-		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Category, &post.Username, &post.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.Category,
+			&post.Username,
+			&post.CreatedAt,
+			&post.LikeCount,
+			&post.DislikeCount,
+		); err != nil {
 			http.Error(w, "Error scanning posts", http.StatusInternalServerError)
 			return
 		}
