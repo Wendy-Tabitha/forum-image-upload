@@ -18,6 +18,7 @@ func main() {
 	http.HandleFunc("/post", handlers.PostHandler)
 	http.HandleFunc("/like", handlers.LikeHandler)
 	http.HandleFunc("/filter", handlers.FilterHandler)
+	http.HandleFunc("/comment", handlers.CommentHandler)
 
 	// Initialize the database
 	handlers.InitDB()

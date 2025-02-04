@@ -31,6 +31,7 @@ func InitDB() {
         title TEXT,
         content TEXT,
         category TEXT,
+        created_at DATETIME DEFAULT (DATETIME('now', 'localtime')), -- Store in local time (EAT)
         FOREIGN KEY(user_id) REFERENCES users(id)
     );
 
