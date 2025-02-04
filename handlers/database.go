@@ -44,13 +44,13 @@ func InitDB() {
         FOREIGN KEY(user_id) REFERENCES users(id)
     );
 
-    CREATE TABLE IF NOT EXISTS likes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT,  -- Changed from INTEGER to TEXT for UUID
-        post_id INTEGER,
-        is_like BOOLEAN,
-        FOREIGN KEY(user_id) REFERENCES users(id),
-        FOREIGN KEY(post_id) REFERENCES posts(id)
+   CREATE TABLE IF NOT EXISTS likes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT,  -- UUID for the user
+    post_id INTEGER,
+    is_like BOOLEAN,
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(post_id) REFERENCES posts(id)
     );
 
     CREATE TABLE IF NOT EXISTS sessions (
