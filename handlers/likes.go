@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 func LikeHandler(w http.ResponseWriter, r *http.Request) {
@@ -12,14 +13,41 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Retrieve session cookie
+	sessionCookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Error(w, "Unauthorized: No session cookie", http.StatusUnauthorized)
+		return
+	}
+
+	// Get user ID from session
+	var userID string
+	err = db.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", sessionCookie.Value).Scan(&userID)
+	if err == sql.ErrNoRows {
+		// If no session is found, clear the cookie and send an unauthorized error
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_id",
+			Value:    "",
+			Path:     "/",
+			Expires:  time.Unix(0, 0), // Expire immediately
+			MaxAge:   -1,
+			HttpOnly: true,
+		})
+		http.Error(w, "Unauthorized: Invalid session", http.StatusUnauthorized)
+		return
+	} else if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	// Read form values
 	postID := r.FormValue("post_id")
-	userID := "1" // Replace with actual user ID from session
 	isLike := r.FormValue("is_like") == "true"
 
 	// Check if the user has already liked/disliked this post
 	var existingLikeID int
 	var existingIsLike bool
-	err := db.QueryRow("SELECT id, is_like FROM likes WHERE user_id = ? AND post_id = ?", userID, postID).Scan(&existingLikeID, &existingIsLike)
+	err = db.QueryRow("SELECT id, is_like FROM likes WHERE user_id = ? AND post_id = ?", userID, postID).Scan(&existingLikeID, &existingIsLike)
 
 	if err == sql.ErrNoRows {
 		// Insert new like/dislike
