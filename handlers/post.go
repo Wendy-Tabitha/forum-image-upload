@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"html/template"
+	"log"
 	"net/http"
 	"time"
 )
@@ -30,13 +31,28 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		title := r.FormValue("title")
 		content := r.FormValue("content")
-		category := r.FormValue("category")
+		categories := r.Form["category"]
 
 		// Insert the new post into the database
-		_, err := db.Exec("INSERT INTO posts (user_id, title, content, category) VALUES (?, ?, ?, ?)", userID, title, content, category)
+		
+		result, err := db.Exec("INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)", userID, title, content)
 		if err != nil {
 			http.Error(w, "Error creating post", http.StatusInternalServerError)
 			return
+		}
+
+		postID, err := result.LastInsertId()
+		if err != nil {
+			RenderError(w,r, "Error retrieving post ID", http.StatusInternalServerError)
+			return
+		}
+
+		for _, category := range categories {
+			_, err = db.Exec("INSERT INTO post_categories (post_id, category) VALUES (?, ?)", postID, category)
+			if err != nil {
+				RenderError(w,r, "Error inserting categories", http.StatusInternalServerError)
+				return
+			}
 		}
 
 		// Redirect back to the home page after creating the post
@@ -49,19 +65,21 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		SELECT 
 			p.id, 
 			p.title, 
-			p.content, 
-			p.category, 
+			p.content,
+			GROUP_CONCAT(pc.category) as categories,
 			u.username, 
 			p.created_at,
 			COALESCE(SUM(l.is_like = 1), 0) AS like_count,
 			COALESCE(SUM(l.is_like = 0), 0) AS dislike_count
 		FROM posts p
 		JOIN users u ON p.user_id = u.id
+		LEFT JOIN post_categories pc ON p.id = pc.post_id
 		LEFT JOIN likes l ON p.id = l.post_id
 		GROUP BY p.id
 		ORDER BY p.created_at DESC
 	`)
 	if err != nil {
+		log.Println("Error fetching posts:", err)
 		http.Error(w, "Error fetching posts", http.StatusInternalServerError)
 		return
 	}
@@ -74,7 +92,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			&post.ID,
 			&post.Title,
 			&post.Content,
-			&post.Category,
+			&post.Categories,
 			&post.Username,
 			&post.CreatedAt,
 			&post.LikeCount,
