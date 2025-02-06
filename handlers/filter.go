@@ -3,17 +3,23 @@ package handlers
 import (
 	"html/template"
 	"net/http"
+	"strings"
 )
 
-// filterHandler handles filtering posts based on criteria
 func FilterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		category := r.URL.Query().Get("category")
+		categories := r.URL.Query()["category"]
 
-		// Query to filter posts by category
-		rows, err := db.Query("SELECT id, title, content, category FROM posts WHERE category = ?", category)
+		// Create a query to filter posts by multiple categories
+		query := "SELECT p.id, p.title, p.content, GROUP_CONCAT(pc.category) as categories, u.username FROM posts p JOIN users u ON p.user_id = u.id LEFT JOIN post_categories pc ON p.id = pc.post_id WHERE pc.category IN (?" + strings.Repeat(",?", len(categories)-1) + ") GROUP BY p.id"
+		args := make([]interface{}, len(categories))
+		for i, category := range categories {
+			args[i] = category
+		}
+
+		rows, err := db.Query(query, args...)
 		if err != nil {
-			http.Error(w, "Error fetching posts", http.StatusInternalServerError)
+			RenderError(w, r, "Error fetching posts", http.StatusInternalServerError)
 			return
 		}
 		defer rows.Close()
@@ -21,17 +27,16 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 		var posts []Post
 		for rows.Next() {
 			var post Post
-			if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Category); err != nil {
-				http.Error(w, "Error scanning posts", http.StatusInternalServerError)
+			if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Categories, &post.Username); err != nil {
+				RenderError(w, r, "Error scanning posts", http.StatusInternalServerError)
 				return
 			}
 			posts = append(posts, post)
 		}
 
-		// Render the filtered posts
-		tmpl, err := template.ParseFiles("templates/index.html")
+		tmpl, err := template.ParseFiles("templates/home.html")
 		if err != nil {
-			http.Error(w, "Error parsing file", http.StatusInternalServerError)
+			RenderError(w, r, "Error parsing file", http.StatusInternalServerError)
 			return
 		}
 		tmpl.Execute(w, map[string]interface{}{
@@ -40,5 +45,5 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	RenderError(w, r, "Invalid request method", http.StatusMethodNotAllowed)
 }
