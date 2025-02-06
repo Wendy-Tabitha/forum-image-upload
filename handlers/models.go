@@ -14,7 +14,7 @@ type Post struct {
 	UserID   string 
 	Title    string
 	Content  string
-	Category string
+	Categories string
 	Username string 
 	CreatedAt string
 	LikeCount   int // Number of likes
