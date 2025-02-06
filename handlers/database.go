@@ -30,9 +30,14 @@ func InitDB() {
         user_id TEXT,  -- Changed from INTEGER to TEXT for UUID
         title TEXT,
         content TEXT,
-        category TEXT,
         created_at DATETIME DEFAULT (DATETIME('now', 'localtime')), -- Store in local time (EAT)
         FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS post_categories (
+        post_id INTEGER,
+        category TEXT,
+        FOREIGN KEY(post_id) REFERENCES posts(id)
     );
 
     CREATE TABLE IF NOT EXISTS comments (
