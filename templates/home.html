@@ -12,9 +12,15 @@
 
 <body>
     <header>
+        {{if .IsLoggedIn}}
+        <div class="logo">
+            <a href="/post" class="logo-link">Forum</a>
+        </div>
+        {{else}}
         <div class="logo">
             <a href="/" class="logo-link">Forum</a>
         </div>
+        {{end}}
         <div class="search-bar">
             <input type="text" placeholder="Search...">
             <button type="button">Search</button>
@@ -58,7 +64,7 @@
             {{if .IsLoggedIn}}
             <div id="createPostForm" style="display: none;">
                 <h1>Create a New Post</h1>
-                <form method="POST" action="/post">
+                <form method="POST" action="/post" onsubmit="return validateCategories()">
                     <label for="title">Title:</label>
                     <input type="text" id="title" name="title" required>
                     <br>
@@ -96,14 +102,14 @@
             <div id="posts">
                 {{if .Posts}}
                 {{range .Posts}}
-                <div class="post" data-category="{{.Category}}">
+                <div class="post" data-category="{{.Categories}}">
                     <p class="posted-on">Posted on: {{.CreatedAt}}</p>
                     <strong>
                         <p>{{.Username}}</p>
                     </strong>
                     <h3>{{.Title}}</h3>
                     <p>{{.Content}}</p>
-                    <p>Category: {{.Category}}</p>
+                    <p>Categories: {{.Categories}}</p>
                     <div class="post-actions">
                         <button class="like-button" data-post-id="{{.ID}}" onclick="toggleLike('{{.ID}}', true)">
                             <i class="fas fa-thumbs-up"></i> Like (<span class="like-count">{{.LikeCount}}</span>)
