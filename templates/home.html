@@ -201,6 +201,23 @@ function toggleLike(postId, isLike) {
             }
         }
 
+        function validateCategories() {
+            const checkboxes = document.querySelectorAll('input[name="category"]');
+            let isChecked = false;
+
+            checkboxes.forEach((checkbox) => {
+                if (checkbox.checked) {
+                    isChecked = true;
+                }
+            });
+
+            if (!isChecked) {
+                alert("Please select at least one category.");
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
+
         function filterByCategory(category) {
             const posts = document.querySelectorAll('.post');
             const postsHeading = document.getElementById('postsHeading');
