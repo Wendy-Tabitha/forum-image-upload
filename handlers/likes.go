@@ -7,9 +7,15 @@ import (
 	"time"
 )
 
+// var db *sql.DB // Ensure this is properly initialized elsewhere in your code
+
 func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Failed to parse form", http.StatusBadRequest)
 		return
 	}
 
@@ -24,12 +30,11 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	var userID string
 	err = db.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", sessionCookie.Value).Scan(&userID)
 	if err == sql.ErrNoRows {
-		// If no session is found, clear the cookie and send an unauthorized error
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_id",
 			Value:    "",
 			Path:     "/",
-			Expires:  time.Unix(0, 0), // Expire immediately
+			Expires:  time.Unix(0, 0),
 			MaxAge:   -1,
 			HttpOnly: true,
 		})
@@ -42,13 +47,16 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Read form values
 	postID := r.FormValue("post_id")
+	if postID == "" {
+		http.Error(w, "Invalid post ID", http.StatusBadRequest)
+		return
+	}
 	isLike := r.FormValue("is_like") == "true"
 
 	// Check if the user has already liked/disliked this post
 	var existingLikeID int
 	var existingIsLike bool
 	err = db.QueryRow("SELECT id, is_like FROM likes WHERE user_id = ? AND post_id = ?", userID, postID).Scan(&existingLikeID, &existingIsLike)
-
 	if err == sql.ErrNoRows {
 		// Insert new like/dislike
 		_, err = db.Exec("INSERT INTO likes (user_id, post_id, is_like) VALUES (?, ?, ?)", userID, postID, isLike)
@@ -60,32 +68,24 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error checking like status", http.StatusInternalServerError)
 		return
 	} else {
-		// Update existing like/dislike
 		if existingIsLike != isLike {
 			_, err = db.Exec("UPDATE likes SET is_like = ? WHERE id = ?", isLike, existingLikeID)
-			if err != nil {
-				http.Error(w, "Error updating like", http.StatusInternalServerError)
-				return
-			}
 		} else {
-			// If the user clicks the same button again, remove the like/dislike
 			_, err = db.Exec("DELETE FROM likes WHERE id = ?", existingLikeID)
-			if err != nil {
-				http.Error(w, "Error removing like", http.StatusInternalServerError)
-				return
-			}
+		}
+		if err != nil {
+			http.Error(w, "Error updating like status", http.StatusInternalServerError)
+			return
 		}
 	}
 
 	// Fetch updated like and dislike counts
 	var likeCount, dislikeCount int
-	err = db.QueryRow("SELECT COUNT(*) FROM likes WHERE post_id = ? AND is_like = true", postID).Scan(&likeCount)
-	if err != nil {
+	if err = db.QueryRow("SELECT COUNT(*) FROM likes WHERE post_id = ? AND is_like = true", postID).Scan(&likeCount); err != nil {
 		http.Error(w, "Error fetching like count", http.StatusInternalServerError)
 		return
 	}
-	err = db.QueryRow("SELECT COUNT(*) FROM likes WHERE post_id = ? AND is_like = false", postID).Scan(&dislikeCount)
-	if err != nil {
+	if err = db.QueryRow("SELECT COUNT(*) FROM likes WHERE post_id = ? AND is_like = false", postID).Scan(&dislikeCount); err != nil {
 		http.Error(w, "Error fetching dislike count", http.StatusInternalServerError)
 		return
 	}
