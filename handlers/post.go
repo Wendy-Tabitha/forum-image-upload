@@ -93,18 +93,24 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	var posts []Post
 	for rows.Next() {
 		var post Post
+		var categories sql.NullString
 		if err := rows.Scan(
 			&post.ID,
 			&post.Title,
 			&post.Content,
-			&post.Categories,
+			&categories,
 			&post.Username,
 			&post.CreatedAt,
 			&post.LikeCount,
 			&post.DislikeCount,
 		); err != nil {
-			http.Error(w, "Error scanning posts", http.StatusInternalServerError)
+			RenderError(w, r, "Error scanning posts", http.StatusInternalServerError)
 			return
+		}
+		if categories.Valid {
+			post.Categories = categories.String // Assign the string value if valid
+		} else {
+			post.Categories = "" // Set to empty string if NULL
 		}
 		posts = append(posts, post)
 	}
