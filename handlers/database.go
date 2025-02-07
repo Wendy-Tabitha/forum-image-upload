@@ -35,8 +35,8 @@ func InitDB() {
     );
 
     CREATE TABLE IF NOT EXISTS post_categories (
-        post_id INTEGER,
-        category TEXT,
+        post_id INTEGER NOT NULL,
+        category TEXT NOT NULL,
         FOREIGN KEY(post_id) REFERENCES posts(id)
     );
 
@@ -51,16 +51,16 @@ func InitDB() {
 
    CREATE TABLE IF NOT EXISTS likes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT,  -- UUID for the user
-    post_id INTEGER,
-    is_like BOOLEAN,
+    user_id TEXT NOT NULL,  -- UUID for the user
+    post_id INTEGER NOT NULL,
+    is_like BOOLEAN NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(post_id) REFERENCES posts(id)
     );
 
     CREATE TABLE IF NOT EXISTS sessions (
         session_id TEXT PRIMARY KEY NOT NULL,
-        user_id TEXT,
+        user_id TEXT NOT NULL,
         FOREIGN KEY(user_id) REFERENCES users(id)
     );
     `
