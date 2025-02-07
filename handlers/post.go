@@ -24,6 +24,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			})
 		} else if err != nil {
 			http.Error(w, "Database Error", http.StatusInternalServerError)
+			log.Println("Error retrieving session:", err)
 			return
 		}
 	}
@@ -33,35 +34,38 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		content := r.FormValue("content")
 		categories := r.Form["category"]
 
+		// Validate inputs
 		if title == "" || content == "" {
 			http.Error(w, "Title and content cannot be empty", http.StatusBadRequest)
 			return
 		}
 
 		// Insert the new post into the database
-		
 		result, err := db.Exec("INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)", userID, title, content)
 		if err != nil {
 			http.Error(w, "Error creating post", http.StatusInternalServerError)
+			log.Println("Error inserting post:", err)
 			return
 		}
 
 		postID, err := result.LastInsertId()
 		if err != nil {
-			RenderError(w,r, "Error retrieving post ID", http.StatusInternalServerError)
+			RenderError(w, r, "Error retrieving post ID", http.StatusInternalServerError)
+			log.Println("Error retrieving last insert ID:", err)
 			return
 		}
 
 		for _, category := range categories {
 			_, err = db.Exec("INSERT INTO post_categories (post_id, category) VALUES (?, ?)", postID, category)
 			if err != nil {
-				RenderError(w,r, "Error inserting categories", http.StatusInternalServerError)
+				RenderError(w, r, "Error inserting categories", http.StatusInternalServerError)
+				log.Println("Error inserting categories:", err)
 				return
 			}
 		}
 
-		// Redirect back to the home page after creating the post
-		http.Redirect(w, r, "/post", http.StatusSeeOther)
+		// Redirect back to home page after creating the post
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -71,16 +75,16 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			p.id, 
 			p.title, 
 			p.content,
-			GROUP_CONCAT(pc.category) as categories,
+			COALESCE(GROUP_CONCAT(pc.category), '') as categories,
 			u.username, 
 			p.created_at,
-			COALESCE(SUM(l.is_like = 1), 0) AS like_count,
-			COALESCE(SUM(l.is_like = 0), 0) AS dislike_count
+			COALESCE(SUM(CASE WHEN l.is_like = 1 THEN 1 ELSE 0 END), 0) AS like_count,
+			COALESCE(SUM(CASE WHEN l.is_like = 0 THEN 1 ELSE 0 END), 0) AS dislike_count
 		FROM posts p
 		JOIN users u ON p.user_id = u.id
 		LEFT JOIN post_categories pc ON p.id = pc.post_id
 		LEFT JOIN likes l ON p.id = l.post_id
-		GROUP BY p.id
+		GROUP BY p.id, p.title, p.content, u.username, p.created_at
 		ORDER BY p.created_at DESC
 	`)
 	if err != nil {
@@ -105,12 +109,13 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			&post.DislikeCount,
 		); err != nil {
 			RenderError(w, r, "Error scanning posts", http.StatusInternalServerError)
+			log.Println("Error scanning post data:", err)
 			return
 		}
 		if categories.Valid {
-			post.Categories = categories.String // Assign the string value if valid
+			post.Categories = categories.String
 		} else {
-			post.Categories = "" // Set to empty string if NULL
+			post.Categories = ""
 		}
 		posts = append(posts, post)
 	}
@@ -119,10 +124,15 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
 		http.Error(w, "Error parsing file", http.StatusInternalServerError)
+		log.Println("Error parsing template:", err)
 		return
 	}
-	tmpl.Execute(w, map[string]interface{}{
+
+	if err := tmpl.Execute(w, map[string]interface{}{
 		"Posts":      posts,
-		"IsLoggedIn": userID != "", // Check if user is logged in
-	})
+		"IsLoggedIn": userID != "",
+	}); err != nil {
+		http.Error(w, "Error rendering template", http.StatusInternalServerError)
+		log.Println("Error executing template:", err)
+	}
 }
