@@ -33,6 +33,11 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		content := r.FormValue("content")
 		categories := r.Form["category"]
 
+		if title == "" || content == "" {
+			http.Error(w, "Title and content cannot be empty", http.StatusBadRequest)
+			return
+		}
+
 		// Insert the new post into the database
 		
 		result, err := db.Exec("INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)", userID, title, content)
