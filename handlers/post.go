@@ -30,6 +30,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
+		// Handle post creation
 		title := r.FormValue("title")
 		content := r.FormValue("content")
 		categories := r.Form["category"]
@@ -69,7 +70,39 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Query to fetch all posts along with the user's name, creation time, and like/dislike counts
+	// Handle displaying a single post with comments
+	postID := r.URL.Query().Get("id")
+	if postID != "" {
+		// Fetch post details
+		post, err := GetPostByID(postID)
+		if err != nil {
+			http.Error(w, "Post not found", http.StatusNotFound)
+			return
+		}
+
+		// Fetch comments for the post
+		comments, err := GetCommentsForPost(post.ID)
+		if err != nil {
+			http.Error(w, "Error fetching comments", http.StatusInternalServerError)
+			return
+		}
+
+		data := struct {
+			Post       Post
+			Comments   []Comment
+			IsLoggedIn bool
+		}{
+			Post:       post,
+			Comments:   comments,
+			IsLoggedIn: userID != "",
+		}
+
+		tmpl := template.Must(template.ParseFiles("templates/post.html"))
+		tmpl.Execute(w, data)
+		return
+	}
+
+	// Handle displaying all posts
 	rows, err := db.Query(`
 		SELECT 
 			p.id, 
