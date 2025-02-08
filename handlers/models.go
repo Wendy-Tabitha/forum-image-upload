@@ -2,7 +2,7 @@ package handlers
 
 // User represents a user in the system
 type User struct {
-	ID       string 
+	ID       string
 	Email    string
 	Username string
 	Password string
@@ -10,15 +10,16 @@ type User struct {
 
 // Post represents a post in the forum
 type Post struct {
-	ID       int
-	UserID   string 
-	Title    string
-	Content  string
-	Categories string
-	Username string 
-	CreatedAt string
-	LikeCount   int // Number of likes
+	ID           int
+	UserID       string
+	Title        string
+	Content      string
+	Categories   string
+	Username     string
+	CreatedAt    string
+	LikeCount    int // Number of likes
 	DislikeCount int
+	Comments     []Comment // List of comments for this post
 }
 
 type Like struct {
@@ -32,13 +33,14 @@ type Like struct {
 type Comment struct {
 	ID        int
 	PostID    int
-	UserID    int
+	UserID    string // Changed from int to string to match User.ID
 	Content   string
 	CreatedAt string
 	Username  string
 }
+
 // Session represents a user session
 type Session struct {
-	SessionID string 
+	SessionID string
 	UserID    string
 }

@@ -15,7 +15,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	postID := r.FormValue("post_id")
-	comment := r.FormValue("comment")
+	comment := r.FormValue("content")
 	userID := getUserIDFromSession(w, r) // Fetch user ID from session
 
 	if userID == "" {
@@ -37,7 +37,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 // Fetch comments for a specific post
 func GetCommentsForPost(postID int) ([]Comment, error) {
 	rows, err := db.Query(`
-		SELECT c.id, c.post_id, c.user_id, c.content, c.created_at, u.username
+		SELECT c.id, c.post_id, CAST(c.user_id AS CHAR), c.content, c.created_at, u.username
 		FROM comments c
 		JOIN users u ON c.user_id = u.id
 		WHERE c.post_id = ?
@@ -88,11 +88,6 @@ func getUserIDFromSession(w http.ResponseWriter, r *http.Request) string {
 	}
 
 	return userID
-}
-
-// 🔹 Check if user is logged in
-func isUserLoggedIn(w http.ResponseWriter, r *http.Request) bool {
-	return getUserIDFromSession(w, r) != ""
 }
 
 // 🔹 Fetch a single post by ID

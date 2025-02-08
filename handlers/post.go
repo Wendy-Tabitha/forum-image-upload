@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -49,123 +48,29 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Get the ID of the newly created post
 		postID, err := result.LastInsertId()
 		if err != nil {
-			RenderError(w, r, "Error retrieving post ID", http.StatusInternalServerError)
-			log.Println("Error retrieving last insert ID:", err)
+			http.Error(w, "Error getting post ID", http.StatusInternalServerError)
+			log.Println("Error getting last insert ID:", err)
 			return
 		}
 
+		// Insert categories for the post
 		for _, category := range categories {
-			_, err = db.Exec("INSERT INTO post_categories (post_id, category) VALUES (?, ?)", postID, category)
+			_, err := db.Exec("INSERT INTO post_categories (post_id, category) VALUES (?, ?)", postID, category)
 			if err != nil {
-				RenderError(w, r, "Error inserting categories", http.StatusInternalServerError)
-				log.Println("Error inserting categories:", err)
-				return
+				log.Printf("Error inserting category %s for post %d: %v", category, postID, err)
+				// Continue with other categories even if one fails
 			}
 		}
 
-		// Redirect back to home page after creating the post
+		// Redirect to home page
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
-	}
-
-	// Handle displaying a single post with comments
-	postID := r.URL.Query().Get("id")
-	if postID != "" {
-		// Fetch post details
-		post, err := GetPostByID(postID)
-		if err != nil {
-			http.Error(w, "Post not found", http.StatusNotFound)
-			return
-		}
-
-		// Fetch comments for the post
-		comments, err := GetCommentsForPost(post.ID)
-		if err != nil {
-			http.Error(w, "Error fetching comments", http.StatusInternalServerError)
-			return
-		}
-
-		data := struct {
-			Post       Post
-			Comments   []Comment
-			IsLoggedIn bool
-		}{
-			Post:       post,
-			Comments:   comments,
-			IsLoggedIn: userID != "",
-		}
-
-		tmpl := template.Must(template.ParseFiles("templates/post.html"))
-		tmpl.Execute(w, data)
+	} else {
+		// For GET requests, redirect to home page
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
-	}
-
-	// Handle displaying all posts
-	rows, err := db.Query(`
-		SELECT 
-			p.id, 
-			p.title, 
-			p.content,
-			COALESCE(GROUP_CONCAT(pc.category), '') as categories,
-			u.username, 
-			p.created_at,
-			COALESCE(SUM(CASE WHEN l.is_like = 1 THEN 1 ELSE 0 END), 0) AS like_count,
-			COALESCE(SUM(CASE WHEN l.is_like = 0 THEN 1 ELSE 0 END), 0) AS dislike_count
-		FROM posts p
-		JOIN users u ON p.user_id = u.id
-		LEFT JOIN post_categories pc ON p.id = pc.post_id
-		LEFT JOIN likes l ON p.id = l.post_id
-		GROUP BY p.id, p.title, p.content, u.username, p.created_at
-		ORDER BY p.created_at DESC
-	`)
-	if err != nil {
-		log.Println("Error fetching posts:", err)
-		http.Error(w, "Error fetching posts", http.StatusInternalServerError)
-		return
-	}
-	defer rows.Close()
-
-	var posts []Post
-	for rows.Next() {
-		var post Post
-		var categories sql.NullString
-		if err := rows.Scan(
-			&post.ID,
-			&post.Title,
-			&post.Content,
-			&categories,
-			&post.Username,
-			&post.CreatedAt,
-			&post.LikeCount,
-			&post.DislikeCount,
-		); err != nil {
-			RenderError(w, r, "Error scanning posts", http.StatusInternalServerError)
-			log.Println("Error scanning post data:", err)
-			return
-		}
-		if categories.Valid {
-			post.Categories = categories.String
-		} else {
-			post.Categories = ""
-		}
-		posts = append(posts, post)
-	}
-
-	// Render the home page with posts
-	tmpl, err := template.ParseFiles("templates/home.html")
-	if err != nil {
-		http.Error(w, "Error parsing file", http.StatusInternalServerError)
-		log.Println("Error parsing template:", err)
-		return
-	}
-
-	if err := tmpl.Execute(w, map[string]interface{}{
-		"Posts":      posts,
-		"IsLoggedIn": userID != "",
-	}); err != nil {
-		http.Error(w, "Error rendering template", http.StatusInternalServerError)
-		log.Println("Error executing template:", err)
 	}
 }
