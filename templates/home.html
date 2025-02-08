@@ -132,6 +132,36 @@
                                     <span class="comment-author">Posted by {{.Username}}</span>
                                     <span class="comment-date">{{.CreatedAt}}</span>
                                 </div>
+                                {{if $.IsLoggedIn}}
+                                <div class="comment-actions">
+                                    <button class="reply-button" onclick="toggleReplyForm('{{.ID}}')">
+                                        Reply{{if gt .ReplyCount 0}} ({{.ReplyCount}}){{end}}
+                                    </button>
+                                </div>
+                                <div class="reply-form" id="reply-form-{{.ID}}" style="display: none;">
+                                    <form method="POST" action="/comment">
+                                        <input type="hidden" name="post_id" value="{{.PostID}}">
+                                        <input type="hidden" name="parent_id" value="{{.ID}}">
+                                        <textarea name="content" placeholder="Write your reply..." required></textarea>
+                                        <button type="submit">Reply</button>
+                                    </form>
+                                </div>
+                                {{end}}
+                                
+                                <!-- Nested Replies -->
+                                {{if .Replies}}
+                                <div class="replies">
+                                    {{range .Replies}}
+                                    <div class="comment reply">
+                                        <div class="comment-content">{{.Content}}</div>
+                                        <div class="comment-meta">
+                                            <span class="comment-author">Posted by {{.Username}}</span>
+                                            <span class="comment-date">{{.CreatedAt}}</span>
+                                        </div>
+                                    </div>
+                                    {{end}}
+                                </div>
+                                {{end}}
                             </div>
                             {{end}}
                         {{end}}
@@ -143,7 +173,7 @@
                             <form method="POST" action="/comment">
                                 <input type="hidden" name="post_id" value="{{.ID}}">
                                 <textarea name="content" placeholder="Write your comment..." required></textarea>
-                                <button type="submit">Post Comment</button>
+                                <button type="submit">Comment</button>
                             </form>
                         {{else}}
                             <p>Please <a href="/login">login</a> to comment.</p>
@@ -267,6 +297,15 @@ function toggleLike(postId, isLike) {
                 commentForm.style.display = 'block';
             } else {
                 commentForm.style.display = 'none';
+            }
+        }
+        
+        function toggleReplyForm(commentId) {
+            const replyForm = document.getElementById(`reply-form-${commentId}`);
+            if (replyForm.style.display === 'none') {
+                replyForm.style.display = 'block';
+            } else {
+                replyForm.style.display = 'none';
             }
         }
     </script>

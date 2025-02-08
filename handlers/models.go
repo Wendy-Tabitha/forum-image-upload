@@ -31,12 +31,15 @@ type Like struct {
 
 // Comment struct
 type Comment struct {
-	ID        int
-	PostID    int
-	UserID    string // Changed from int to string to match User.ID
-	Content   string
-	CreatedAt string
-	Username  string
+	ID          int
+	PostID      int
+	UserID      string // Changed from int to string to match User.ID
+	Content     string
+	CreatedAt   string
+	Username    string
+	ParentID    *int      // Parent comment ID, null for top-level comments
+	Replies     []Comment // List of reply comments
+	ReplyCount  int       // Number of replies
 }
 
 // Session represents a user session
