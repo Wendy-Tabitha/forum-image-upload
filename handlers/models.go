@@ -28,14 +28,15 @@ type Like struct {
 	IsLike bool   // true for like, false for dislike
 }
 
-// Comment represents a comment on a post
+// Comment struct
 type Comment struct {
-	ID      int
-	PostID  int
-	UserID  string 
-	Content string
+	ID        int
+	PostID    int
+	UserID    int
+	Content   string
+	CreatedAt string
+	Username  string
 }
-
 // Session represents a user session
 type Session struct {
 	SessionID string 
