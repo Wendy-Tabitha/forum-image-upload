@@ -22,7 +22,7 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	// Retrieve session cookie
 	sessionCookie, err := r.Cookie("session_id")
 	if err != nil {
-		http.Error(w, "Unauthorized: No session cookie", http.StatusUnauthorized)
+		http.Error(w, "You must be logged in to like or dislike a post", http.StatusUnauthorized)
 		return
 	}
 
@@ -38,7 +38,7 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 			MaxAge:   -1,
 			HttpOnly: true,
 		})
-		http.Error(w, "Unauthorized: Invalid session", http.StatusUnauthorized)
+		http.Error(w, "You must be logged in to like or dislike a post", http.StatusUnauthorized)
 		return
 	} else if err != nil {
 		http.Error(w, "Database error", http.StatusInternalServerError)

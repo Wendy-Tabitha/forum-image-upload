@@ -218,7 +218,14 @@ function toggleLike(postId, isLike) {
         },
         body: `post_id=${postId}&is_like=${isLike}`
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             // Update the like and dislike counts
@@ -239,14 +246,11 @@ function toggleLike(postId, isLike) {
                 dislikeButton.classList.toggle('active');
                 likeButton.classList.remove('active');
             }
-        } else {
-            console.error('Error toggling like');
-            alert('Failed to update like/dislike. Please try again.');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred. Please try again.');
+        alert(error.message || 'An error occurred. Please try again.');
     })
     .finally(() => {
         isProcessing = false; // Reset debounce flag
@@ -254,61 +258,52 @@ function toggleLike(postId, isLike) {
 }
 
 function toggleCommentLike(commentId, isLike) {
-    if (isProcessing) return;
+    if (isProcessing) return; // Prevent multiple rapid clicks
     isProcessing = true;
-
-    const formData = new FormData();
-    formData.append('comment_id', commentId);
-    formData.append('is_like', isLike);
 
     fetch('/comment/like', {
         method: 'POST',
-        body: formData
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `comment_id=${commentId}&is_like=${isLike}`
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            return response.text().then(text => {
+                throw new Error(text);
+            });
         }
         return response.json();
     })
     .then(data => {
-        // Update like/dislike counts in the UI
-        const comment = document.querySelector(`[data-comment-id="${commentId}"]`);
-        if (!comment) {
-            console.error('Comment element not found:', commentId);
-            return;
-        }
+        if (data.success) {
+            // Update the like and dislike counts
+            const likeCountElement = document.querySelector(`.like-button[data-comment-id="${commentId}"] .like-count`);
+            const dislikeCountElement = document.querySelector(`.dislike-button[data-comment-id="${commentId}"] .dislike-count`);
 
-        const likeButton = comment.querySelector('.like-button');
-        const dislikeButton = comment.querySelector('.dislike-button');
-        
-        if (!likeButton || !dislikeButton) {
-            console.error('Like/dislike buttons not found for comment:', commentId);
-            return;
-        }
+            likeCountElement.textContent = data.like_count;
+            dislikeCountElement.textContent = data.dislike_count;
 
-        const likeCount = likeButton.querySelector('.like-count');
-        const dislikeCount = dislikeButton.querySelector('.dislike-count');
-        
-        if (!likeCount || !dislikeCount) {
-            console.error('Like/dislike count elements not found for comment:', commentId);
-            return;
-        }
+            // Update button styles
+            const likeButton = document.querySelector(`.like-button[data-comment-id="${commentId}"]`);
+            const dislikeButton = document.querySelector(`.dislike-button[data-comment-id="${commentId}"]`);
 
-        // Update the counts
-        likeCount.textContent = data.likeCount;
-        dislikeCount.textContent = data.dislikeCount;
-        
-        // Update button states based on user's like status
-        likeButton.classList.toggle('active', data.userLiked === true);
-        dislikeButton.classList.toggle('active', data.userLiked === false);
+            if (isLike) {
+                likeButton.classList.toggle('active');
+                dislikeButton.classList.remove('active');
+            } else {
+                dislikeButton.classList.toggle('active');
+                likeButton.classList.remove('active');
+            }
+        }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error updating like status. Please try again.');
+        alert(error.message || 'An error occurred. Please try again.');
     })
     .finally(() => {
-        isProcessing = false;
+        isProcessing = false; // Reset debounce flag
     });
 }
 

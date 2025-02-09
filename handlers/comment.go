@@ -21,7 +21,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	userID := getUserIDFromSession(w, r) // Fetch user ID from session
 
 	if userID == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Please log in to comment on posts", http.StatusUnauthorized)
 		return
 	}
 
@@ -97,18 +97,22 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 			"INSERT INTO comments (post_id, user_id, content, parent_id, created_at) VALUES (?, ?, ?, ?, ?)",
 			postIDInt, userID, content, parentIDInt, time.Now(),
 		)
+		if err != nil {
+			tx.Rollback()
+			http.Error(w, "Failed to insert comment", http.StatusInternalServerError)
+			return
+		}
 	} else {
 		// This is a top-level comment
 		_, err = tx.Exec(
 			"INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)",
 			postIDInt, userID, content, time.Now(),
 		)
-	}
-
-	if err != nil {
-		log.Printf("Error inserting comment: %v", err)
-		http.Error(w, "Error posting comment", http.StatusInternalServerError)
-		return
+		if err != nil {
+			tx.Rollback()
+			http.Error(w, "Failed to insert comment", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	// Commit the transaction
