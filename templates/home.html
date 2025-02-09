@@ -112,10 +112,10 @@
                     <p>Categories: {{.Categories}}</p>
                     <div class="post-actions">
                         <button class="like-button" data-post-id="{{.ID}}" onclick="toggleLike('{{.ID}}', true)">
-                            <i class="fas fa-thumbs-up"></i> Like (<span class="like-count">{{.LikeCount}}</span>)
+                            <i class="fas fa-thumbs-up"></i> <span class="like-count">{{.LikeCount}}</span>
                         </button>
                         <button class="dislike-button" data-post-id="{{.ID}}" onclick="toggleLike('{{.ID}}', false)">
-                            <i class="fas fa-thumbs-down"></i> Dislike (<span class="dislike-count">{{.DislikeCount}}</span>)
+                            <i class="fas fa-thumbs-down"></i> <span class="dislike-count">{{.DislikeCount}}</span>
                         </button>
                         <button class="comment-button" onclick="toggleCommentForm('{{.ID}}')">
                             <i class="fas fa-comment"></i> Comments ({{len .Comments}})
@@ -126,7 +126,7 @@
                     <div class="comments-section" id="comments-{{.ID}}">
                         {{if .Comments}}
                             {{range .Comments}}
-                            <div class="comment">
+                            <div class="comment" data-comment-id="{{.ID}}">
                                 <div class="comment-content">{{.Content}}</div>
                                 <div class="comment-meta">
                                     <span class="comment-author">Posted by {{.Username}}</span>
@@ -134,6 +134,12 @@
                                 </div>
                                 {{if $.IsLoggedIn}}
                                 <div class="comment-actions">
+                                    <button class="like-button" onclick="toggleCommentLike('{{.ID}}', true)">
+                                        <i class="fas fa-thumbs-up"></i> <span class="like-count">{{.LikeCount}}</span>
+                                    </button>
+                                    <button class="dislike-button" onclick="toggleCommentLike('{{.ID}}', false)">
+                                        <i class="fas fa-thumbs-down"></i> <span class="dislike-count">{{.DislikeCount}}</span>
+                                    </button>
                                     <button class="reply-button" onclick="toggleReplyForm('{{.ID}}')">
                                         Reply{{if gt .ReplyCount 0}} ({{.ReplyCount}}){{end}}
                                     </button>
@@ -152,12 +158,22 @@
                                 {{if .Replies}}
                                 <div class="replies">
                                     {{range .Replies}}
-                                    <div class="comment reply">
+                                    <div class="comment reply" data-comment-id="{{.ID}}">
                                         <div class="comment-content">{{.Content}}</div>
                                         <div class="comment-meta">
                                             <span class="comment-author">Posted by {{.Username}}</span>
                                             <span class="comment-date">{{.CreatedAt}}</span>
                                         </div>
+                                        {{if $.IsLoggedIn}}
+                                        <div class="comment-actions">
+                                            <button class="like-button" onclick="toggleCommentLike('{{.ID}}', true)">
+                                                <i class="fas fa-thumbs-up"></i> <span class="like-count">{{.LikeCount}}</span>
+                                            </button>
+                                            <button class="dislike-button" onclick="toggleCommentLike('{{.ID}}', false)">
+                                                <i class="fas fa-thumbs-down"></i> <span class="dislike-count">{{.DislikeCount}}</span>
+                                            </button>
+                                        </div>
+                                        {{end}}
                                     </div>
                                     {{end}}
                                 </div>
@@ -236,78 +252,138 @@ function toggleLike(postId, isLike) {
         isProcessing = false; // Reset debounce flag
     });
 }
-        function toggleCreatePost() {
-            const createPostForm = document.getElementById('createPostForm');
-            const postsList = document.getElementById('posts');
-            const postsHeading = document.getElementById('postsHeading');
 
-            if (createPostForm.style.display === 'none') {
-                createPostForm.style.display = 'block';
-                postsList.style.display = 'none';
-                postsHeading.style.display = 'none'; // Hide the heading when the form is shown
-            } else {
-                createPostForm.style.display = 'none';
-                postsList.style.display = 'block';
-                postsHeading.style.display = 'block'; // Show the heading when the form is hidden
-            }
+function toggleCommentLike(commentId, isLike) {
+    if (isProcessing) return;
+    isProcessing = true;
+
+    const formData = new FormData();
+    formData.append('comment_id', commentId);
+    formData.append('is_like', isLike);
+
+    fetch('/comment/like', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Update like/dislike counts in the UI
+        const comment = document.querySelector(`[data-comment-id="${commentId}"]`);
+        if (!comment) {
+            console.error('Comment element not found:', commentId);
+            return;
         }
 
-        function validateCategories() {
-            const checkboxes = document.querySelectorAll('input[name="category"]');
-            let isChecked = false;
-
-            checkboxes.forEach((checkbox) => {
-                if (checkbox.checked) {
-                    isChecked = true;
-                }
-            });
-
-            if (!isChecked) {
-                alert("Please select at least one category.");
-                return false; // Prevent form submission
-            }
-            return true; // Allow form submission
-        }
-
-        function filterByCategory(category) {
-            const posts = document.querySelectorAll('.post');
-            const postsHeading = document.getElementById('postsHeading');
-
-            posts.forEach(post => {
-                if (category === 'all' || post.getAttribute('data-category').toLowerCase() === category.toLowerCase()) {
-                    post.style.display = 'block';
-                } else {
-                    post.style.display = 'none';
-                }
-            });
-
-            // Update the heading based on the selected category
-            if (category === 'all') {
-                postsHeading.textContent = 'All Posts';
-            } else {
-                postsHeading.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Posts';
-            }
-
-            return false; // Prevent default link behavior
-        }
-
-        function toggleCommentForm(postId) {
-            const commentForm = document.getElementById(`comment-form-${postId}`);
-            if (commentForm.style.display === 'none') {
-                commentForm.style.display = 'block';
-            } else {
-                commentForm.style.display = 'none';
-            }
-        }
+        const likeButton = comment.querySelector('.like-button');
+        const dislikeButton = comment.querySelector('.dislike-button');
         
-        function toggleReplyForm(commentId) {
-            const replyForm = document.getElementById(`reply-form-${commentId}`);
-            if (replyForm.style.display === 'none') {
-                replyForm.style.display = 'block';
-            } else {
-                replyForm.style.display = 'none';
-            }
+        if (!likeButton || !dislikeButton) {
+            console.error('Like/dislike buttons not found for comment:', commentId);
+            return;
         }
+
+        const likeCount = likeButton.querySelector('.like-count');
+        const dislikeCount = dislikeButton.querySelector('.dislike-count');
+        
+        if (!likeCount || !dislikeCount) {
+            console.error('Like/dislike count elements not found for comment:', commentId);
+            return;
+        }
+
+        // Update the counts
+        likeCount.textContent = data.likeCount;
+        dislikeCount.textContent = data.dislikeCount;
+        
+        // Update button states based on user's like status
+        likeButton.classList.toggle('active', data.userLiked === true);
+        dislikeButton.classList.toggle('active', data.userLiked === false);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating like status. Please try again.');
+    })
+    .finally(() => {
+        isProcessing = false;
+    });
+}
+
+function toggleCreatePost() {
+    const createPostForm = document.getElementById('createPostForm');
+    const postsList = document.getElementById('posts');
+    const postsHeading = document.getElementById('postsHeading');
+
+    if (createPostForm.style.display === 'none') {
+        createPostForm.style.display = 'block';
+        postsList.style.display = 'none';
+        postsHeading.style.display = 'none'; // Hide the heading when the form is shown
+    } else {
+        createPostForm.style.display = 'none';
+        postsList.style.display = 'block';
+        postsHeading.style.display = 'block'; // Show the heading when the form is hidden
+    }
+}
+
+function validateCategories() {
+    const checkboxes = document.querySelectorAll('input[name="category"]');
+    let isChecked = false;
+
+    checkboxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+            isChecked = true;
+        }
+    });
+
+    if (!isChecked) {
+        alert("Please select at least one category.");
+        return false; // Prevent form submission
+    }
+    return true; // Allow form submission
+}
+
+function filterByCategory(category) {
+    const posts = document.querySelectorAll('.post');
+    const postsHeading = document.getElementById('postsHeading');
+
+    posts.forEach(post => {
+        if (category === 'all' || post.getAttribute('data-category').toLowerCase() === category.toLowerCase()) {
+            post.style.display = 'block';
+        } else {
+            post.style.display = 'none';
+        }
+    });
+
+    // Update the heading based on the selected category
+    if (category === 'all') {
+        postsHeading.textContent = 'All Posts';
+    } else {
+        postsHeading.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Posts';
+    }
+
+    return false; // Prevent default link behavior
+}
+
+function toggleCommentForm(postId) {
+    const commentForm = document.getElementById(`comment-form-${postId}`);
+    if (commentForm.style.display === 'none') {
+        commentForm.style.display = 'block';
+    } else {
+        commentForm.style.display = 'none';
+    }
+}
+        
+function toggleReplyForm(commentId) {
+    const replyForm = document.getElementById(`reply-form-${commentId}`);
+    if (replyForm.style.display === 'none') {
+        replyForm.style.display = 'block';
+    } else {
+        replyForm.style.display = 'none';
+    }
+}
     </script>
 </body>
 

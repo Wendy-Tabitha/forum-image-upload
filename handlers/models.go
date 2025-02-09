@@ -40,6 +40,9 @@ type Comment struct {
 	ParentID    *int      // Parent comment ID, null for top-level comments
 	Replies     []Comment // List of reply comments
 	ReplyCount  int       // Number of replies
+	LikeCount   int       // Number of likes
+	DislikeCount int      // Number of dislikes
+	UserLiked    *bool    // Whether the current user liked this comment
 }
 
 // Session represents a user session

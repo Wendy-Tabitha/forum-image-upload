@@ -128,13 +128,15 @@ func GetCommentsForPost(postID int) ([]Comment, error) {
 	rows, err := db.Query(`
 		SELECT 
 			c.id, 
-			c.post_id, 
-			CAST(c.user_id AS CHAR), 
-			c.content, 
-			c.created_at, 
+			c.post_id,
+			c.user_id,
+			c.content,
+			c.created_at,
 			u.username,
 			c.parent_id,
-			(SELECT COUNT(*) FROM comments WHERE parent_id = c.id) as reply_count
+			(SELECT COUNT(*) FROM comments r WHERE r.parent_id = c.id) as reply_count,
+			(SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.is_like = 1) as like_count,
+			(SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.is_like = 0) as dislike_count
 		FROM comments c
 		JOIN users u ON c.user_id = u.id
 		WHERE c.post_id = ? AND c.parent_id IS NULL
@@ -145,40 +147,35 @@ func GetCommentsForPost(postID int) ([]Comment, error) {
 	}
 	defer rows.Close()
 
-	comments := make([]Comment, 0)
+	var comments []Comment
 	for rows.Next() {
-		var c Comment
-		var createdAt time.Time
-		var parentID sql.NullInt64
-		if err := rows.Scan(
-			&c.ID,
-			&c.PostID,
-			&c.UserID,
-			&c.Content,
-			&createdAt,
-			&c.Username,
-			&parentID,
-			&c.ReplyCount,
-		); err != nil {
+		var comment Comment
+		err := rows.Scan(
+			&comment.ID,
+			&comment.PostID,
+			&comment.UserID,
+			&comment.Content,
+			&comment.CreatedAt,
+			&comment.Username,
+			&comment.ParentID,
+			&comment.ReplyCount,
+			&comment.LikeCount,
+			&comment.DislikeCount,
+		)
+		if err != nil {
 			return nil, err
-		}
-		c.CreatedAt = createdAt.Format("Jan 2, 2006 at 3:04 PM")
-		if parentID.Valid {
-			pID := int(parentID.Int64)
-			c.ParentID = &pID
 		}
 
 		// Get replies for this comment
-		if c.ReplyCount > 0 {
-			replies, err := GetCommentReplies(c.ID)
-			if err != nil {
-				return nil, err
-			}
-			c.Replies = replies
+		replies, err := GetCommentReplies(comment.ID)
+		if err != nil {
+			return nil, err
 		}
+		comment.Replies = replies
 
-		comments = append(comments, c)
+		comments = append(comments, comment)
 	}
+
 	return comments, nil
 }
 
@@ -187,13 +184,15 @@ func GetCommentReplies(commentID int) ([]Comment, error) {
 	rows, err := db.Query(`
 		SELECT 
 			c.id, 
-			c.post_id, 
-			CAST(c.user_id AS CHAR), 
-			c.content, 
-			c.created_at, 
+			c.post_id,
+			c.user_id,
+			c.content,
+			c.created_at,
 			u.username,
 			c.parent_id,
-			(SELECT COUNT(*) FROM comments WHERE parent_id = c.id) as reply_count
+			0 as reply_count,
+			(SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.is_like = 1) as like_count,
+			(SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.is_like = 0) as dislike_count
 		FROM comments c
 		JOIN users u ON c.user_id = u.id
 		WHERE c.parent_id = ?
@@ -204,30 +203,27 @@ func GetCommentReplies(commentID int) ([]Comment, error) {
 	}
 	defer rows.Close()
 
-	replies := make([]Comment, 0)
+	var replies []Comment
 	for rows.Next() {
-		var c Comment
-		var createdAt time.Time
-		var parentID sql.NullInt64
-		if err := rows.Scan(
-			&c.ID,
-			&c.PostID,
-			&c.UserID,
-			&c.Content,
-			&createdAt,
-			&c.Username,
-			&parentID,
-			&c.ReplyCount,
-		); err != nil {
+		var reply Comment
+		err := rows.Scan(
+			&reply.ID,
+			&reply.PostID,
+			&reply.UserID,
+			&reply.Content,
+			&reply.CreatedAt,
+			&reply.Username,
+			&reply.ParentID,
+			&reply.ReplyCount,
+			&reply.LikeCount,
+			&reply.DislikeCount,
+		)
+		if err != nil {
 			return nil, err
 		}
-		c.CreatedAt = createdAt.Format("Jan 2, 2006 at 3:04 PM")
-		if parentID.Valid {
-			pID := int(parentID.Int64)
-			c.ParentID = &pID
-		}
-		replies = append(replies, c)
+		replies = append(replies, reply)
 	}
+
 	return replies, nil
 }
 
