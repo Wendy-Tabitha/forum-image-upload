@@ -134,10 +134,10 @@
                                 </div>
                                 {{if $.IsLoggedIn}}
                                 <div class="comment-actions">
-                                    <button class="like-button" onclick="toggleCommentLike('{{.ID}}', true)">
+                                    <button class="like-button" data-comment-id="{{.ID}}" onclick="toggleCommentLike('{{.ID}}', true)">
                                         <i class="fas fa-thumbs-up"></i> <span class="like-count">{{.LikeCount}}</span>
                                     </button>
-                                    <button class="dislike-button" onclick="toggleCommentLike('{{.ID}}', false)">
+                                    <button class="dislike-button" data-comment-id="{{.ID}}" onclick="toggleCommentLike('{{.ID}}', false)">
                                         <i class="fas fa-thumbs-down"></i> <span class="dislike-count">{{.DislikeCount}}</span>
                                     </button>
                                     <button class="reply-button" onclick="toggleReplyForm('{{.ID}}')">
@@ -166,10 +166,10 @@
                                         </div>
                                         {{if $.IsLoggedIn}}
                                         <div class="comment-actions">
-                                            <button class="like-button" onclick="toggleCommentLike('{{.ID}}', true)">
+                                            <button class="like-button" data-comment-id="{{.ID}}" onclick="toggleCommentLike('{{.ID}}', true)">
                                                 <i class="fas fa-thumbs-up"></i> <span class="like-count">{{.LikeCount}}</span>
                                             </button>
-                                            <button class="dislike-button" onclick="toggleCommentLike('{{.ID}}', false)">
+                                            <button class="dislike-button" data-comment-id="{{.ID}}" onclick="toggleCommentLike('{{.ID}}', false)">
                                                 <i class="fas fa-thumbs-down"></i> <span class="dislike-count">{{.DislikeCount}}</span>
                                             </button>
                                         </div>
@@ -277,25 +277,38 @@ function toggleCommentLike(commentId, isLike) {
         return response.json();
     })
     .then(data => {
-        if (data.success) {
-            // Update the like and dislike counts
-            const likeCountElement = document.querySelector(`.like-button[data-comment-id="${commentId}"] .like-count`);
-            const dislikeCountElement = document.querySelector(`.dislike-button[data-comment-id="${commentId}"] .dislike-count`);
+        // Find the clicked button directly using the data-comment-id attribute
+        const clickedButton = document.querySelector(`button[data-comment-id="${commentId}"][class*="-button"]`);
+        if (!clickedButton) return;
 
-            likeCountElement.textContent = data.like_count;
-            dislikeCountElement.textContent = data.dislike_count;
+        // Find the parent comment container
+        const comment = clickedButton.closest('.comment');
+        if (!comment) return;
 
-            // Update button styles
-            const likeButton = document.querySelector(`.like-button[data-comment-id="${commentId}"]`);
-            const dislikeButton = document.querySelector(`.dislike-button[data-comment-id="${commentId}"]`);
+        // Find the like/dislike buttons within this comment
+        const likeButton = comment.querySelector('.like-button[data-comment-id="' + commentId + '"]');
+        const dislikeButton = comment.querySelector('.dislike-button[data-comment-id="' + commentId + '"]');
+        
+        if (!likeButton || !dislikeButton) return;
 
-            if (isLike) {
-                likeButton.classList.toggle('active');
-                dislikeButton.classList.remove('active');
-            } else {
-                dislikeButton.classList.toggle('active');
-                likeButton.classList.remove('active');
-            }
+        const likeCountElement = likeButton.querySelector('.like-count');
+        const dislikeCountElement = dislikeButton.querySelector('.dislike-count');
+
+        // Update the counts
+        if (likeCountElement) likeCountElement.textContent = data.likeCount;
+        if (dislikeCountElement) dislikeCountElement.textContent = data.dislikeCount;
+
+        // Update button styles based on userLiked
+        if (data.userLiked === true) {
+            likeButton.classList.add('active');
+            dislikeButton.classList.remove('active');
+        } else if (data.userLiked === false) {
+            dislikeButton.classList.add('active');
+            likeButton.classList.remove('active');
+        } else {
+            // If userLiked is null, remove both active states
+            likeButton.classList.remove('active');
+            dislikeButton.classList.remove('active');
         }
     })
     .catch(error => {

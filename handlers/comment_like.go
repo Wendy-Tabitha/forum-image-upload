@@ -105,17 +105,28 @@ func CommentLikeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get updated counts and user's current like status
 	var response CommentLikeResponse
+	var userLiked sql.NullBool
 	err = tx.QueryRow(`
 		SELECT 
 			(SELECT COUNT(*) FROM comment_likes WHERE comment_id = ? AND is_like = 1),
 			(SELECT COUNT(*) FROM comment_likes WHERE comment_id = ? AND is_like = 0),
-			(SELECT is_like FROM comment_likes WHERE comment_id = ? AND user_id = ?)
-	`, commentIDInt, commentIDInt, commentIDInt, userID).Scan(&response.LikeCount, &response.DislikeCount, &response.UserLiked)
+			CASE 
+				WHEN EXISTS (SELECT 1 FROM comment_likes WHERE comment_id = ? AND user_id = ?)
+				THEN (SELECT is_like FROM comment_likes WHERE comment_id = ? AND user_id = ?)
+				ELSE NULL 
+			END
+	`, commentIDInt, commentIDInt, commentIDInt, userID, commentIDInt, userID).Scan(&response.LikeCount, &response.DislikeCount, &userLiked)
 
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		log.Printf("Error getting updated counts: %v", err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
+	}
+
+	if userLiked.Valid {
+		response.UserLiked = &userLiked.Bool
+	} else {
+		response.UserLiked = nil
 	}
 
 	// Commit transaction
