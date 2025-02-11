@@ -108,7 +108,8 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get user information
 	var username string
-	err = db.QueryRow("SELECT username FROM users WHERE id = ?", userID).Scan(&username)
+	var email string
+	err = db.QueryRow("SELECT username, email FROM users WHERE id = ?", userID).Scan(&username, &email)
 	if err != nil {
 		log.Printf("Error fetching user info: %v", err)
 		RenderError(w, r, "Error fetching user information", http.StatusInternalServerError)
@@ -117,6 +118,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := map[string]interface{}{
 		"Username":     username,
+		"Email":        email,
 		"CreatedPosts": userPosts,
 		"LikedPosts":   userLikedPosts,
 	}
