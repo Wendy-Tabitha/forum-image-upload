@@ -21,6 +21,7 @@ func main() {
 	http.HandleFunc("/comment", handlers.CommentHandler)
 	http.HandleFunc("/comment/like", handlers.CommentLikeHandler)
 	http.HandleFunc("/logout", handlers.LogoutHandler)
+	http.HandleFunc("/profile", handlers.ProfileHandler) // Register the profile route
 
 	// Initialize the database
 	handlers.InitDB()
