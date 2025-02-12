@@ -184,12 +184,9 @@ button:hover {
 
 header {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    background-color: var(--background-color);
-    gap: 15px;
+    align-items: center; /* Align items vertically centered */
+    justify-content: space-between; /* Space between logo and hamburger */
+    padding: 10px; /* Add some padding */
 }
 
 .logo {
@@ -589,6 +586,23 @@ img {
     height: auto;
 }
 
+.hamburger {
+    display: none; /* Hidden by default */
+    cursor: pointer;
+    font-size: 24px; /* Adjust size as needed */
+    color: var(--primary-color); /* Use your primary color */
+}
+
+@media (max-width: 768px) {
+    .hamburger {
+        display: block; /* Show on mobile */
+    }
+
+    .sidebar {
+        display: none; /* Hide sidebar by default on mobile */
+    }
+}
+
 /* Mobile Responsiveness */
 @media screen and (max-width: 768px) {
     header {
@@ -640,6 +654,14 @@ img {
 
     .post {
         flex: 1 1 100%;
+    }
+
+    .hamburger {
+        display: block; /* Show on mobile */
+    }
+
+    .sidebar {
+        display: none; /* Hide sidebar by default on mobile */
     }
 }
 
