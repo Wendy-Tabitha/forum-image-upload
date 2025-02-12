@@ -19,6 +19,7 @@ body {
     color: var(--text-color);
     margin: 0;
     padding: 0;
+    padding: 0 15px;
 }
 
 h1,
@@ -29,12 +30,19 @@ h3 {
 
 nav {
     margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
 }
 
 nav a {
     color: var(--link-color);
     text-decoration: none;
     margin-right: 15px;
+    flex-grow: 1;
+    text-align: center;
+    padding: 10px;
 }
 
 nav a:hover {
@@ -82,7 +90,7 @@ nav a:hover {
 
 .profile-section {
     flex: 1;
-    min-width: 300px;
+    min-width: 200px;
     background-color: white;
     padding: 20px;
     border-radius: 5px;
@@ -102,6 +110,7 @@ nav a:hover {
     background-color: var(--background-color);
     border-radius: 5px;
     transition: transform 0.2s;
+    height: auto;
 }
 
 .post:hover {
@@ -150,6 +159,7 @@ nav a:hover {
         min-width: auto;
     }
 }
+
 .post {
     /* border: 1px solid var(--border-color); */
     padding: 20px;
@@ -160,7 +170,6 @@ nav a:hover {
     max-width: 800px;
     box-shadow: 0 2px 4px rgba(179, 179, 179, 0.1);
 }
-
 
 .post:hover {
     box-shadow: 0 2px 4px rgba(36, 36, 36, 0.1);
@@ -195,49 +204,122 @@ button:hover {
     /* Darker shade for hover effect */
 }
 
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
 header {
-    background-color: white;
-    color: var(--text-color);
-    padding: 10px;
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    padding: 15px;
+    background-color: var(--background-color);
+    gap: 15px;
 }
 
 .logo {
-    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.logo-link {
+    font-size: 1.5rem;
     font-weight: bold;
     color: var(--primary-color);
+    text-decoration: none;
 }
 
 .search-bar {
-    flex-grow: 0;
-    margin: 0 20px;
-    width: 300px;
+    display: flex;
+    flex-grow: 1;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .search-bar input {
-    width: 200px;
-    padding: 8px;
-    border-radius: 4px;
+    flex-grow: 1;
+    padding: 10px;
     border: 1px solid var(--border-color);
+    border-radius: 4px 0 0 4px;
 }
 
-nav a {
-    color: var(--text-color);
+.search-bar button {
+    padding: 10px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.auth-button {
+    padding: 8px 16px;
+    border-radius: 4px;
     text-decoration: none;
-    margin-left: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.auth-button:hover {
+    background-color: #3a6270;
+}
+
+/* Mobile Responsiveness */
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .logo {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    
+    .search-bar {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    nav a {
+        text-align: center;
+        padding: 10px;
+        margin: 5px 0;
+    }
+    
+    .auth-button {
+        display: block;
+        width: 100%;
+    }
+}
+
+/* Tablet Responsiveness */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    header {
+        padding: 10px;
+    }
+    
+    .search-bar {
+        max-width: 400px;
+    }
+}
+
+/* Accessibility Enhancements */
+@media (max-width: 480px) {
+    nav a, .auth-button {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 .container {
@@ -670,4 +752,145 @@ main {
 
 .comment-form button:hover, .reply-form button:hover {
     background-color: #3a6270;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+@media screen and (max-width: 600px) {
+    body {
+        font-size: 14px;
+    }
+
+    nav {
+        flex-direction: column;
+    }
+
+    .profile-header {
+        padding: 10px;
+    }
+}
+
+@media screen and (min-width: 601px) and (max-width: 1024px) {
+    body {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    nav a, .auth-button {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    nav a {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 0 10px;
+    }
+    .container {
+        flex-direction: column;
+    }
+    .sidebar {
+        display: none; /* Hide sidebar on small screens */
+    }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    padding: 0 15px;
+}
+
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    nav a {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        padding: 0 10px;
+    }
+    .container {
+        flex-direction: column;
+    }
+    .sidebar {
+        display: none; /* Hide sidebar on small screens */
+    }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    /* Removed max-width to allow fluidity on smaller devices */
+    padding: 0 15px;
+}
+
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    nav a {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        padding: 0 10px;
+    }
+    .container {
+        flex-direction: column;
+    }
+    .sidebar {
+        display: none; /* Hide sidebar on small screens */
+    }
 }
