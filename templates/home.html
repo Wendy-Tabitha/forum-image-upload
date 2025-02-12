@@ -33,23 +33,23 @@
         </nav>
     </header>
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <h3>Categories</h3>
             <ul>
-                <li><a href="#" onclick="filterByCategory('all')">All Posts</a></li>
-                <li><a href="#" onclick="filterByCategory('technology')">Technology</a></li>
-                <li><a href="#" onclick="filterByCategory('general')">General</a></li>
-                <li><a href="#" onclick="filterByCategory('lifestyle')">Lifestyle</a></li>
-                <li><a href="#" onclick="filterByCategory('entertainment')">Entertainment</a></li>
-                <li><a href="#" onclick="filterByCategory('gaming')">Gaming</a></li>
-                <li><a href="#" onclick="filterByCategory('food')">Food</a></li>
-                <li><a href="#" onclick="filterByCategory('business')">Business</a></li>
-                <li><a href="#" onclick="filterByCategory('religion')">Religion</a></li>
-                <li><a href="#" onclick="filterByCategory('health')">Health</a></li>
-                <li><a href="#" onclick="filterByCategory('music')">Music</a></li>
-                <li><a href="#" onclick="filterByCategory('sports')">Sports</a></li>
-                <li><a href="#" onclick="filterByCategory('beauty')">Beauty</a></li>
-                <li><a href="#" onclick="filterByCategory('jobs')">Jobs</a></li>
+                <li><a href="/filter?category=all">All Posts</a></li>
+                <li><a href="/filter?category=technology">Technology</a></li>
+                <li><a href="/filter?category=general">General</a></li>
+                <li><a href="/filter?category=lifestyle">Lifestyle</a></li>
+                <li><a href="/filter?category=entertainment">Entertainment</a></li>
+                <li><a href="/filter?category=gaming">Gaming</a></li>
+                <li><a href="/filter?category=food">Food</a></li>
+                <li><a href="/filter?category=business">Business</a></li>
+                <li><a href="/filter?category=religion">Religion</a></li>
+                <li><a href="/filter?category=health">Health</a></li>
+                <li><a href="/filter?category=music">Music</a></li>
+                <li><a href="/filter?category=sports">Sports</a></li>
+                <li><a href="/filter?category=beauty">Beauty</a></li>
+                <li><a href="/filter?category=jobs">Jobs</a></li>
             </ul>
             <div class="sidebar-footer">
                 {{if .IsLoggedIn}} <!-- Only show logout link if user is logged in -->
@@ -96,7 +96,13 @@
             {{end}}
 
             <!-- Posts List -->
-            <h1 id="postsHeading">All Posts</h1>
+            <h1 id="postsHeading">
+                {{if .SelectedCategory}}
+                {{.SelectedCategory}}
+                {{else}}
+                All Posts
+                {{end}}
+            </h1>
             <div id="posts">
                 {{if .Posts}}
                 {{range .Posts}}
@@ -107,7 +113,7 @@
                     </strong>
                     <h3>{{.Title}}</h3>
                     <p>{{.Content}}</p>
-                    <p>Categories: {{.Categories}}</p>
+                    <p class="categories">Categories: <span>{{.Categories}}</span></p>
                     <div class="post-actions">
                         <button class="like-button" data-post-id="{{.ID}}" onclick="toggleLike('{{.ID}}', true)">
                             <i class="fas fa-thumbs-up"></i> <span class="like-count">{{.LikeCount}}</span>
@@ -204,55 +210,52 @@
     <script>
    let isProcessing = false; // Debounce flag
 
-function toggleLike(postId, isLike) {
-    if (isProcessing) return; // Prevent multiple rapid clicks
-    isProcessing = true;
+   function toggleLike(postId, isLike) {
+            if (isProcessing) return; // Prevent multiple rapid clicks
+            isProcessing = true;
 
-    fetch('/like', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `post_id=${postId}&is_like=${isLike}`
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(text);
+            fetch('/like', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `post_id=${postId}&is_like=${isLike}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the like and dislike counts
+                    const likeCountElement = document.querySelector(`.like-button[data-post-id="${postId}"] .like-count`);
+                    const dislikeCountElement = document.querySelector(`.dislike-button[data-post-id="${postId}"] .dislike-count`);
+
+                    likeCountElement.textContent = data.like_count;
+                    dislikeCountElement.textContent = data.dislike_count;
+
+                    // Update button styles
+                    const likeButton = document.querySelector(`.like-button[data-post-id="${postId}"]`);
+                    const dislikeButton = document.querySelector(`.dislike-button[data-post-id="${postId}"]`);
+
+                    if (isLike) {
+                        likeButton.classList.toggle('active');
+                        dislikeButton.classList.remove('active');
+                    } else {
+                        dislikeButton.classList.toggle('active');
+                        likeButton.classList.remove('active');
+                    }
+                } else {
+                    console.error('Error toggling like');
+                    alert('Failed to update like/dislike. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            })
+            .finally(() => {
+                isProcessing = false; // Reset debounce flag
             });
         }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            // Update the like and dislike counts
-            const likeCountElement = document.querySelector(`.like-button[data-post-id="${postId}"] .like-count`);
-            const dislikeCountElement = document.querySelector(`.dislike-button[data-post-id="${postId}"] .dislike-count`);
 
-            likeCountElement.textContent = data.like_count;
-            dislikeCountElement.textContent = data.dislike_count;
-
-            // Update button styles
-            const likeButton = document.querySelector(`.like-button[data-post-id="${postId}"]`);
-            const dislikeButton = document.querySelector(`.dislike-button[data-post-id="${postId}"]`);
-
-            if (isLike) {
-                likeButton.classList.toggle('active');
-                dislikeButton.classList.remove('active');
-            } else {
-                dislikeButton.classList.toggle('active');
-                likeButton.classList.remove('active');
-            }
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert(error.message || 'An error occurred. Please try again.');
-    })
-    .finally(() => {
-        isProcessing = false; // Reset debounce flag
-    });
-}
 
 function toggleCommentLike(commentId, isLike) {
     if (isProcessing) return; // Prevent multiple rapid clicks
