@@ -220,9 +220,16 @@
                 },
                 body: `post_id=${postId}&is_like=${isLike}`
             })
-            .then(response => response.json())
+            .then(response => {
+        if (response.status === 401) {
+            // User is not logged in, redirect to login page
+            window.location.href = '/login';
+            return;
+        }
+        return response.json();
+    })
             .then(data => {
-                if (data.success) {
+                if (data && data.success) {
                     // Update the like and dislike counts
                     const likeCountElement = document.querySelector(`.like-button[data-post-id="${postId}"] .like-count`);
                     const dislikeCountElement = document.querySelector(`.dislike-button[data-post-id="${postId}"] .dislike-count`);
@@ -241,9 +248,9 @@
                         dislikeButton.classList.toggle('active');
                         likeButton.classList.remove('active');
                     }
-                } else {
-                    console.error('Error toggling like');
-                    alert('Failed to update like/dislike. Please try again.');
+                } else if (data && data.success) {
+                    console.error('Error:', data.error);
+            alert(data.error); // Optional: Show the error message
                 }
             })
             .catch(error => {
