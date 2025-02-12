@@ -1,10 +1,16 @@
 :root {
-    --primary-color: #4A7C8C; /* Muted teal */
-    --secondary-color: #B8D8D2; /* Light mint */
-    --background-color: #F4F4F4; /* Soft gray */
-    --text-color: #333333; /* Dark gray for text */
-    --link-color: #2A4D69; /* Deep blue for links */
-    --border-color: #D1D1D1; /* Light gray for borders */
+    --primary-color: #4A7C8C;
+    /* Muted teal */
+    --secondary-color: #B8D8D2;
+    /* Light mint */
+    --background-color: #F4F4F4;
+    /* Soft gray */
+    --text-color: #333333;
+    /* Dark gray for text */
+    --link-color: #2A4D69;
+    /* Deep blue for links */
+    --border-color: #D1D1D1;
+    /* Light gray for borders */
 }
 
 *,
@@ -21,7 +27,9 @@ body {
     padding: 0 15px;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     color: var(--primary-color);
 }
 
@@ -179,15 +187,26 @@ button {
 }
 
 button:hover {
-    background-color: #3A6B7A; /* Darker shade for hover effect */
+    background-color: #3A6B7A;
+    /* Darker shade for hover effect */
 }
 
 header {
+    background-color: white;
+    color: var(--text-color);
+    padding: 10px;
     display: flex;
-    align-items: center; /* Align items vertically centered */
-    justify-content: space-between; /* Space between logo and hamburger */
-    padding: 10px; /* Add some padding */
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+
 
 .logo {
     flex-shrink: 0;
@@ -244,15 +263,43 @@ header {
     gap: 20px;
 }
 
+.profile-container {
+    display: flex;
+    margin-top: 100px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 20px;
+}
+
+.profile-head {
+    padding: 35px;
+}
+
 .sidebar {
     width: 200px;
     background-color: white;
     padding: 15px;
     position: sticky;
-    top: 80px; /* Accounts for header height + some spacing */
+    top: 80px;
+    /* Accounts for header height + some spacing */
     height: fit-content;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+    margin-top: 100px;
+}
+
+.logout-link {
+    background-color: rgb(204, 204, 204);
+    color: var(--text-color);
+    /* Red color for logout */
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    padding: 8px 0;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
 .sidebar h3 {
@@ -296,18 +343,20 @@ main {
     padding: 20px;
     width: 100%;
     max-width: 800px;
-    margin-top: 0;
+    margin-top: 100px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(179, 179, 179, 0.1);
 }
 
 .auth-container {
+    width: 90%;
     max-width: 400px;
-    margin: 100px auto;
-    padding: 30px;
-    background-color: white;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 150px;
 }
 
 .auth-container h1 {
@@ -367,7 +416,7 @@ main {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
+    margin-top: 100px;
 }
 
 #createPostForm h1 {
@@ -539,7 +588,8 @@ main {
     text-decoration: underline;
 }
 
-.comment-form, .reply-form {
+.comment-form,
+.reply-form {
     margin-top: 15px;
     padding: 15px;
     background-color: #f9f9f9;
@@ -551,7 +601,8 @@ main {
     background-color: #f5f5f5;
 }
 
-.comment-form textarea, .reply-form textarea {
+.comment-form textarea,
+.reply-form textarea {
     width: 100%;
     min-height: 80px;
     padding: 10px;
@@ -561,7 +612,8 @@ main {
     resize: vertical;
 }
 
-.comment-form button, .reply-form button {
+.comment-form button,
+.reply-form button {
     background-color: var(--primary-color);
     color: white;
     padding: 8px 16px;
@@ -571,7 +623,8 @@ main {
     font-size: 14px;
 }
 
-.comment-form button:hover, .reply-form button:hover {
+.comment-form button:hover,
+.reply-form button:hover {
     background-color: #3a6270;
 }
 
@@ -587,19 +640,24 @@ img {
 }
 
 .hamburger {
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
     cursor: pointer;
-    font-size: 24px; /* Adjust size as needed */
-    color: var(--primary-color); /* Use your primary color */
+    font-size: 24px;
+    /* Adjust size as needed */
+    color: var(--primary-color);
+    /* Use your primary color */
 }
 
 @media (max-width: 768px) {
     .hamburger {
-        display: block; /* Show on mobile */
+        display: block;
+        /* Show on mobile */
     }
 
     .sidebar {
-        display: none; /* Hide sidebar by default on mobile */
+        display: none;
+        /* Hide sidebar by default on mobile */
     }
 }
 
@@ -609,28 +667,28 @@ img {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .logo {
         text-align: center;
         margin-bottom: 15px;
     }
-    
+
     .search-bar {
         width: 100%;
         margin-bottom: 15px;
     }
-    
+
     nav {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     nav a {
         text-align: center;
         padding: 10px;
         margin: 5px 0;
     }
-    
+
     .auth-button {
         display: block;
         width: 100%;
@@ -649,7 +707,8 @@ img {
     }
 
     .sidebar {
-        display: none; /* Hide sidebar on small screens */
+        display: none;
+        /* Hide sidebar on small screens */
     }
 
     .post {
@@ -657,11 +716,13 @@ img {
     }
 
     .hamburger {
-        display: block; /* Show on mobile */
+        display: block;
+        /* Show on mobile */
     }
 
     .sidebar {
-        display: none; /* Hide sidebar by default on mobile */
+        display: none;
+        /* Hide sidebar by default on mobile */
     }
 }
 
@@ -670,7 +731,7 @@ img {
     header {
         padding: 10px;
     }
-    
+
     .search-bar {
         max-width: 400px;
     }
@@ -678,7 +739,9 @@ img {
 
 /* Accessibility Enhancements */
 @media (max-width: 480px) {
-    nav a, .auth-button {
+
+    nav a,
+    .auth-button {
         min-height: 44px;
         min-width: 44px;
         display: flex;
