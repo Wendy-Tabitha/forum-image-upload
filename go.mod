@@ -1,6 +1,8 @@
-module forum
+module github.com/Wendy-Tabitha/discussion
 
-go 1.22.5
+go 1.23
+
+toolchain go1.23.5
 
 require golang.org/x/crypto v0.32.0
 

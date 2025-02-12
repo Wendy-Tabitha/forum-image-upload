@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"forum/handlers"
+	"github.com/Wendy-Tabitha/discussion/handlers"
 )
 
 func main() {

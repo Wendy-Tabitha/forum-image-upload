@@ -23,7 +23,7 @@ func CommentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user ID from session
-	userID := getUserIDFromSession(w, r)
+	userID := GetUserIdFromSession(w, r)
 	if userID == "" {
 		http.Error(w, "Please log in to like or dislike comments", http.StatusUnauthorized)
 		return

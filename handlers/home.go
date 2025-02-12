@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"database/sql"
 	"html/template"
 	"net/http"
-	"database/sql"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	userID := getUserIDFromSession(w, r)
+	userID := GetUserIdFromSession(w, r)
 
 	// Query to fetch all posts along with user info, categories, like counts, and comments
 	rows, err := db.Query(`

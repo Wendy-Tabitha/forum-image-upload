@@ -101,10 +101,12 @@ var (
 	}
 )
 
+// RenderErrorFunc is the type for rendering error responses
+type RenderErrorFunc func(w http.ResponseWriter, r *http.Request, errorKey string, statusCode int)
 // RenderError renders the error template with the given error message and status code
-func RenderError(w http.ResponseWriter, r *http.Request, errorKey string, statusCode int) {
+func renderError(w http.ResponseWriter, r *http.Request, errorKey string, statusCode int) {
 	// Get user's login status
-	userID := getUserIDFromSession(w, r)
+	userID := GetUserIdFromSession(w, r)
 	isLoggedIn := userID != ""
 
 	// Get error data from the map, or use default if not found
@@ -133,3 +135,6 @@ func RenderError(w http.ResponseWriter, r *http.Request, errorKey string, status
 		return
 	}
 }
+
+// RenderError is a function variable that can be mocked in tests
+var RenderError RenderErrorFunc = renderError

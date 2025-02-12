@@ -7,7 +7,7 @@ import (
 )
 
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
-	userID := getUserIDFromSession(w, r)
+	userID := GetUserIdFromSession(w, r)
 	if userID == "" {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return

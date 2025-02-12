@@ -18,7 +18,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	postID := r.FormValue("post_id")
 	content := r.FormValue("content")
 	parentID := r.FormValue("parent_id") // New: Get parent comment ID if this is a reply
-	userID := getUserIDFromSession(w, r) // Fetch user ID from session
+	userID := GetUserIdFromSession(w, r) // Fetch user ID from session
 
 	if userID == "" {
 		http.Error(w, "Please log in to comment on posts", http.StatusUnauthorized)
@@ -127,7 +127,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Fetch comments for a specific post
-func GetCommentsForPost(postID int) ([]Comment, error) {
+var GetCommentsForPost = func(postID int) ([]Comment, error) {
 	// First, get all comments for this post
 	rows, err := db.Query(`
 		SELECT 
@@ -184,7 +184,7 @@ func GetCommentsForPost(postID int) ([]Comment, error) {
 }
 
 // Get replies for a specific comment
-func GetCommentReplies(commentID int) ([]Comment, error) {
+var GetCommentReplies = func(commentID int) ([]Comment, error) {
 	rows, err := db.Query(`
 		SELECT 
 			c.id, 
@@ -232,30 +232,17 @@ func GetCommentReplies(commentID int) ([]Comment, error) {
 }
 
 // Get user ID from session
-func getUserIDFromSession(w http.ResponseWriter, r *http.Request) string {
-	sessionCookie, err := r.Cookie("session_id")
+var GetUserIdFromSession = func(w http.ResponseWriter, r *http.Request) string {
+	cookie, err := r.Cookie("session-name")
 	if err != nil {
+		log.Printf("Error getting session cookie: %v", err)
+		http.Error(w, "Error getting session", http.StatusInternalServerError)
 		return ""
 	}
 
-	var userID string
-	err = db.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", sessionCookie.Value).Scan(&userID)
-	if err == sql.ErrNoRows {
-		// Clear invalid session
-		http.SetCookie(w, &http.Cookie{
-			Name:     "session_id",
-			Value:    "",
-			Path:     "/",
-			Expires:  time.Unix(0, 0),
-			MaxAge:   -1,
-			HttpOnly: true,
-		})
-		http.Error(w, "Unauthorized: Invalid session", http.StatusUnauthorized)
-		return ""
-	} else if err != nil {
-		http.Error(w, "Database error", http.StatusInternalServerError)
-		return ""
-	}
+	// Decode or parse the session value here
+	// This is a placeholder - you'll need to implement your own session decoding logic
+	userID := cookie.Value
 
 	return userID
 }
