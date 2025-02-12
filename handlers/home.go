@@ -11,19 +11,21 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Query to fetch all posts along with user info, categories, like counts, and comments
 	rows, err := db.Query(`
-		SELECT 
-			p.id, 
-			p.title, 
-			p.content, 
-			GROUP_CONCAT(DISTINCT pc.category) as categories, 
-			u.username, 
-			p.created_at,
-			(SELECT COUNT(*) FROM likes WHERE post_id = p.id AND is_like = 1) as like_count,
-			(SELECT COUNT(*) FROM likes WHERE post_id = p.id AND is_like = 0) as dislike_count
-		FROM posts p 
-		JOIN users u ON p.user_id = u.id 
-		LEFT JOIN post_categories pc ON p.id = pc.post_id 
-		GROUP BY p.id 
+		SELECT p.id, p.title, p.content, GROUP_CONCAT(pc.category) as categories, 
+		u.username, p.created_at, 
+		COALESCE(l.like_count, 0) AS like_count,
+		COALESCE(l.dislike_count, 0) AS dislike_count
+		FROM posts p
+		JOIN users u ON p.user_id = u.id
+		LEFT JOIN post_categories pc ON p.id = pc.post_id
+		LEFT JOIN (
+			SELECT post_id, 
+			COUNT(CASE WHEN is_like = 1 THEN 1 END) AS like_count,
+			COUNT(CASE WHEN is_like = 0 THEN 1 END) AS dislike_count
+			FROM likes
+			GROUP BY post_id
+		) l ON p.id = l.post_id
+		GROUP BY p.id, p.title, p.content, u.username, p.created_at
 		ORDER BY p.created_at DESC`)
 	if err != nil {
 		RenderError(w, r, "Error fetching posts", http.StatusInternalServerError)
