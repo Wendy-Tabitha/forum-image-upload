@@ -23,7 +23,14 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if the user is logged in
 	session, err := r.Cookie("session_id")
 	if err != nil {
-		http.Error(w, "You must be logged in to like a post", http.StatusUnauthorized)
+		// User is not logged in, return a custom JSON response
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"error":   "You must be logged in to like a post",
+			"redirect": "/login", // Add a redirect URL
+		})
 		return
 	}
 
