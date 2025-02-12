@@ -2,9 +2,13 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 )
 
@@ -342,6 +346,565 @@ func TestGetCommentsForPost(t *testing.T) {
 				if len(firstComment.Replies) != tc.expectedResult.replyCount {
 					t.Errorf("Expected %d replies, got %d", tc.expectedResult.replyCount, len(firstComment.Replies))
 				}
+			}
+		})
+	}
+}
+
+func TestGetCommentReplies(t *testing.T) {
+	// Setup mock database
+	mockDB, err := sql.Open("sqlite3", ":memory:")
+	if err != nil {
+		t.Fatalf("Failed to create mock database: %v", err)
+	}
+	defer mockDB.Close()
+
+	// Replace global db with mock
+	originalDB := db
+	db = mockDB
+	defer func() { db = originalDB }()
+
+	// Prepare mock database schema and data
+	_, err = mockDB.Exec(`
+		CREATE TABLE users (
+			id INTEGER PRIMARY KEY,
+			username TEXT
+		);
+		CREATE TABLE posts (
+			id INTEGER PRIMARY KEY,
+			title TEXT
+		);
+		CREATE TABLE comments (
+			id INTEGER PRIMARY KEY,
+			post_id INTEGER,
+			user_id INTEGER,
+			content TEXT,
+			created_at DATETIME,
+			parent_id INTEGER,
+			FOREIGN KEY(post_id) REFERENCES posts(id),
+			FOREIGN KEY(user_id) REFERENCES users(id),
+			FOREIGN KEY(parent_id) REFERENCES comments(id)
+		);
+		CREATE TABLE comment_likes (
+			comment_id INTEGER,
+			is_like BOOLEAN
+		);
+
+		-- Insert test users
+		INSERT INTO users (id, username) VALUES 
+		(1, 'testuser1'),
+		(2, 'testuser2');
+
+		-- Insert test post
+		INSERT INTO posts (id, title) VALUES (1, 'Test Post');
+
+		-- Insert test comments
+		INSERT INTO comments (id, post_id, user_id, content, created_at, parent_id) VALUES 
+		(1, 1, 1, 'Parent comment', '2024-01-01 10:00:00', NULL),
+		(2, 1, 2, 'First reply', '2024-01-01 11:00:00', 1),
+		(3, 1, 1, 'Second reply', '2024-01-01 12:00:00', 1);
+
+		-- Insert comment likes
+		INSERT INTO comment_likes (comment_id, is_like) VALUES 
+		(2, 1), (2, 1),  -- 2 likes for first reply
+		(3, 0), (3, 0);  -- 2 dislikes for second reply
+	`)
+	if err != nil {
+		t.Fatalf("Failed to prepare mock data: %v", err)
+	}
+
+	// Test cases
+	testCases := []struct {
+		name           string
+		commentID      int
+		expectedResult struct {
+			replyCount         int
+			firstReplyID       int
+			firstReplyLikes    int
+			firstReplyDislikes int
+		}
+	}{
+		{
+			name:      "Existing Comment with Replies",
+			commentID: 1,
+			expectedResult: struct {
+				replyCount         int
+				firstReplyID       int
+				firstReplyLikes    int
+				firstReplyDislikes int
+			}{
+				replyCount:         2,
+				firstReplyID:       2,
+				firstReplyLikes:    2,
+				firstReplyDislikes: 0,
+			},
+		},
+		{
+			name:      "Comment with No Replies",
+			commentID: 2,
+			expectedResult: struct {
+				replyCount         int
+				firstReplyID       int
+				firstReplyLikes    int
+				firstReplyDislikes int
+			}{
+				replyCount: 0,
+			},
+		},
+		{
+			name:      "Non-Existing Comment",
+			commentID: 999,
+			expectedResult: struct {
+				replyCount         int
+				firstReplyID       int
+				firstReplyLikes    int
+				firstReplyDislikes int
+			}{
+				replyCount: 0,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			replies, err := GetCommentReplies(tc.commentID)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+
+			if len(replies) != tc.expectedResult.replyCount {
+				t.Errorf("Expected %d replies, got %d", tc.expectedResult.replyCount, len(replies))
+			}
+
+			if len(replies) > 0 {
+				firstReply := replies[0]
+				if firstReply.ID != tc.expectedResult.firstReplyID {
+					t.Errorf("Expected first reply ID %d, got %d", tc.expectedResult.firstReplyID, firstReply.ID)
+				}
+
+				if firstReply.LikeCount != tc.expectedResult.firstReplyLikes {
+					t.Errorf("Expected %d likes, got %d", tc.expectedResult.firstReplyLikes, firstReply.LikeCount)
+				}
+
+				if firstReply.DislikeCount != tc.expectedResult.firstReplyDislikes {
+					t.Errorf("Expected %d dislikes, got %d", tc.expectedResult.firstReplyDislikes, firstReply.DislikeCount)
+				}
+			}
+		})
+	}
+}
+
+func TestCommentHandler(t *testing.T) {
+	// Setup mock database
+	mockDB, err := sql.Open("sqlite3", ":memory:")
+	if err != nil {
+		t.Fatalf("Failed to create mock database: %v", err)
+	}
+	defer mockDB.Close()
+
+	// Replace global db with mock
+	originalDB := db
+	db = mockDB
+	defer func() { db = originalDB }()
+
+	// Prepare mock database schema and data
+	_, err = mockDB.Exec(`
+		CREATE TABLE users (
+			id INTEGER PRIMARY KEY,
+			username TEXT
+		);
+		CREATE TABLE posts (
+			id INTEGER PRIMARY KEY,
+			title TEXT
+		);
+		CREATE TABLE comments (
+			id INTEGER PRIMARY KEY,
+			post_id INTEGER,
+			user_id INTEGER,
+			content TEXT,
+			created_at DATETIME,
+			parent_id INTEGER,
+			FOREIGN KEY(post_id) REFERENCES posts(id),
+			FOREIGN KEY(user_id) REFERENCES users(id),
+			FOREIGN KEY(parent_id) REFERENCES comments(id)
+		);
+
+		-- Insert test users
+		INSERT INTO users (id, username) VALUES 
+		(1, 'testuser1'),
+		(2, 'testuser2');
+
+		-- Insert test post
+		INSERT INTO posts (id, title) VALUES (1, 'Test Post');
+	`)
+	if err != nil {
+		t.Fatalf("Failed to prepare mock data: %v", err)
+	}
+
+	// Test cases
+	testCases := []struct {
+		name           string
+		method         string
+		postID         string
+		content        string
+		parentID       string
+		userID         string
+		expectedStatus int
+		expectedError  string
+		checkDBFunc    func(t *testing.T, db *sql.DB) // Optional function to check database state
+	}{
+		{
+			name:           "Valid Top-Level Comment",
+			method:         http.MethodPost,
+			postID:         "1",
+			content:        "Test comment",
+			userID:         "1",
+			expectedStatus: http.StatusSeeOther,
+			checkDBFunc: func(t *testing.T, db *sql.DB) {
+				var count int
+				err := db.QueryRow("SELECT COUNT(*) FROM comments WHERE post_id = 1 AND parent_id IS NULL").Scan(&count)
+				if err != nil {
+					t.Fatalf("Error checking comment count: %v", err)
+				}
+				if count != 1 {
+					t.Errorf("Expected 1 top-level comment, got %d", count)
+				}
+			},
+		},
+		{
+			name:           "Invalid Request Method",
+			method:         http.MethodGet,
+			postID:         "1",
+			content:        "Test comment",
+			userID:         "1",
+			expectedStatus: http.StatusMethodNotAllowed,
+			expectedError:  "Invalid request method",
+		},
+		{
+			name:           "Missing User ID",
+			method:         http.MethodPost,
+			postID:         "1",
+			content:        "Test comment",
+			userID:         "",
+			expectedStatus: http.StatusUnauthorized,
+			expectedError:  "Please log in to comment on posts",
+		},
+		{
+			name:           "Missing Post ID",
+			method:         http.MethodPost,
+			postID:         "",
+			content:        "Test comment",
+			userID:         "1",
+			expectedStatus: http.StatusBadRequest,
+			expectedError:  "Post ID is required",
+		},
+		{
+			name:           "Empty Comment Content",
+			method:         http.MethodPost,
+			postID:         "1",
+			content:        "",
+			userID:         "1",
+			expectedStatus: http.StatusBadRequest,
+			expectedError:  "Comment content cannot be empty",
+		},
+		{
+			name:           "Non-Existent Post",
+			method:         http.MethodPost,
+			postID:         "999",
+			content:        "Test comment",
+			userID:         "1",
+			expectedStatus: http.StatusNotFound,
+			expectedError:  "Post not found",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Reset database for each test case
+			_, err = mockDB.Exec("DELETE FROM comments")
+			if err != nil {
+				t.Fatalf("Failed to reset comments table: %v", err)
+			}
+
+			// Prepare form data
+			formData := url.Values{
+				"post_id":   {tc.postID},
+				"content":   {tc.content},
+				"parent_id": {tc.parentID},
+			}
+
+			// Create a request
+			req := httptest.NewRequest(tc.method, "/comment", strings.NewReader(formData.Encode()))
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+			// Create a response recorder
+			w := httptest.NewRecorder()
+
+			// Mock GetUserIdFromSession
+			originalGetUserIdFromSession := GetUserIdFromSession
+			GetUserIdFromSession = func(w http.ResponseWriter, r *http.Request) string {
+				return tc.userID
+			}
+			defer func() { GetUserIdFromSession = originalGetUserIdFromSession }()
+
+			// Call the handler
+			CommentHandler(w, req)
+
+			// Check response status
+			resp := w.Result()
+			if resp.StatusCode != tc.expectedStatus {
+				t.Errorf("Expected status %d, got %d", tc.expectedStatus, resp.StatusCode)
+			}
+
+			// Check error message if expected
+			if tc.expectedError != "" {
+				body, _ := ioutil.ReadAll(resp.Body)
+				if !strings.Contains(string(body), tc.expectedError) {
+					t.Errorf("Expected error message '%s', got '%s'", tc.expectedError, string(body))
+				}
+			}
+
+			// Optional database state check
+			if tc.checkDBFunc != nil {
+				tc.checkDBFunc(t, mockDB)
+			}
+		})
+	}
+}
+
+func TestCommentLikeHandler(t *testing.T) {
+	// Setup mock database
+	mockDB, err := sql.Open("sqlite3", ":memory:")
+	if err != nil {
+		t.Fatalf("Failed to create mock database: %v", err)
+	}
+	defer mockDB.Close()
+
+	// Replace global db with mock
+	originalDB := db
+	db = mockDB
+	defer func() { db = originalDB }()
+
+	// Prepare mock database schema and data
+	_, err = mockDB.Exec(`
+		CREATE TABLE users (
+			id INTEGER PRIMARY KEY,
+			username TEXT
+		);
+		CREATE TABLE posts (
+			id INTEGER PRIMARY KEY,
+			title TEXT
+		);
+		CREATE TABLE comments (
+			id INTEGER PRIMARY KEY,
+			post_id INTEGER,
+			user_id INTEGER,
+			content TEXT,
+			created_at DATETIME,
+			parent_id INTEGER,
+			FOREIGN KEY(post_id) REFERENCES posts(id),
+			FOREIGN KEY(user_id) REFERENCES users(id),
+			FOREIGN KEY(parent_id) REFERENCES comments(id)
+		);
+		CREATE TABLE comment_likes (
+			comment_id INTEGER,
+			user_id INTEGER,
+			is_like BOOLEAN,
+			PRIMARY KEY(comment_id, user_id)
+		);
+
+		-- Insert test users
+		INSERT INTO users (id, username) VALUES 
+		(1, 'testuser1'),
+		(2, 'testuser2');
+
+		-- Insert test post
+		INSERT INTO posts (id, title) VALUES (1, 'Test Post');
+
+		-- Insert test comment
+		INSERT INTO comments (id, post_id, user_id, content, created_at) VALUES 
+		(1, 1, 1, 'Test comment', '2024-01-01 10:00:00');
+	`)
+	if err != nil {
+		t.Fatalf("Failed to prepare mock data: %v", err)
+	}
+
+	// Test cases
+	testCases := []struct {
+		name           string
+		method         string
+		userID         string
+		commentID      string
+		isLike         string
+		expectedStatus int
+		expectedError  string
+		checkDBFunc    func(t *testing.T, db *sql.DB)          // Optional function to check database state
+		checkResponse  func(t *testing.T, resp *http.Response) // Optional function to check response
+	}{
+		{
+			name:           "Valid First Like",
+			method:         http.MethodPost,
+			userID:         "1",
+			commentID:      "1",
+			isLike:         "true",
+			expectedStatus: http.StatusOK,
+			checkDBFunc: func(t *testing.T, db *sql.DB) {
+				var count int
+				err := db.QueryRow("SELECT COUNT(*) FROM comment_likes WHERE comment_id = 1 AND user_id = 1 AND is_like = 1").Scan(&count)
+				if err != nil {
+					t.Fatalf("Error checking like: %v", err)
+				}
+				if count != 1 {
+					t.Errorf("Expected 1 like, got %d", count)
+				}
+			},
+			checkResponse: func(t *testing.T, resp *http.Response) {
+				var likeResp CommentLikeResponse
+				err := json.NewDecoder(resp.Body).Decode(&likeResp)
+				if err != nil {
+					t.Fatalf("Failed to decode response: %v", err)
+				}
+				if likeResp.LikeCount != 1 || likeResp.DislikeCount != 0 {
+					t.Errorf("Unexpected like/dislike counts: likes=%d, dislikes=%d",
+						likeResp.LikeCount, likeResp.DislikeCount)
+				}
+				if likeResp.UserLiked == nil || *likeResp.UserLiked != true {
+					t.Errorf("Unexpected user liked status: %v", likeResp.UserLiked)
+				}
+			},
+		},
+		{
+			name:           "Change Like to Dislike",
+			method:         http.MethodPost,
+			userID:         "1",
+			commentID:      "1",
+			isLike:         "false",
+			expectedStatus: http.StatusOK,
+			checkDBFunc: func(t *testing.T, db *sql.DB) {
+				var count int
+				err := db.QueryRow("SELECT COUNT(*) FROM comment_likes WHERE comment_id = 1 AND user_id = 1 AND is_like = 0").Scan(&count)
+				if err != nil {
+					t.Fatalf("Error checking dislike: %v", err)
+				}
+				if count != 1 {
+					t.Errorf("Expected 1 dislike, got %d", count)
+				}
+			},
+			checkResponse: func(t *testing.T, resp *http.Response) {
+				var likeResp CommentLikeResponse
+				err := json.NewDecoder(resp.Body).Decode(&likeResp)
+				if err != nil {
+					t.Fatalf("Failed to decode response: %v", err)
+				}
+				if likeResp.LikeCount != 0 || likeResp.DislikeCount != 1 {
+					t.Errorf("Unexpected like/dislike counts: likes=%d, dislikes=%d",
+						likeResp.LikeCount, likeResp.DislikeCount)
+				}
+				if likeResp.UserLiked == nil || *likeResp.UserLiked != false {
+					t.Errorf("Unexpected user liked status: %v", likeResp.UserLiked)
+				}
+			},
+		},
+		{
+			name:           "Invalid Request Method",
+			method:         http.MethodGet,
+			userID:         "1",
+			commentID:      "1",
+			isLike:         "true",
+			expectedStatus: http.StatusMethodNotAllowed,
+			expectedError:  "Method not allowed",
+		},
+		{
+			name:           "Missing User ID",
+			method:         http.MethodPost,
+			userID:         "",
+			commentID:      "1",
+			isLike:         "true",
+			expectedStatus: http.StatusUnauthorized,
+			expectedError:  "Please log in to like or dislike comments",
+		},
+		{
+			name:           "Missing Comment ID",
+			method:         http.MethodPost,
+			userID:         "1",
+			commentID:      "",
+			isLike:         "true",
+			expectedStatus: http.StatusBadRequest,
+			expectedError:  "Comment ID is required",
+		},
+		{
+			name:           "Invalid Comment ID",
+			method:         http.MethodPost,
+			userID:         "1",
+			commentID:      "invalid",
+			isLike:         "true",
+			expectedStatus: http.StatusBadRequest,
+			expectedError:  "Invalid comment ID",
+		},
+		{
+			name:           "Non-Existent Comment",
+			method:         http.MethodPost,
+			userID:         "1",
+			commentID:      "999",
+			isLike:         "true",
+			expectedStatus: http.StatusNotFound,
+			expectedError:  "Comment not found",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Reset comment_likes table for each test case
+			_, err = mockDB.Exec("DELETE FROM comment_likes")
+			if err != nil {
+				t.Fatalf("Failed to reset comment_likes table: %v", err)
+			}
+
+			// Prepare form data
+			formData := url.Values{
+				"comment_id": {tc.commentID},
+				"is_like":    {tc.isLike},
+			}
+
+			// Create a request
+			req := httptest.NewRequest(tc.method, "/comment/like", strings.NewReader(formData.Encode()))
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+			// Create a response recorder
+			w := httptest.NewRecorder()
+
+			// Mock GetUserIdFromSession
+			originalGetUserIdFromSession := GetUserIdFromSession
+			GetUserIdFromSession = func(w http.ResponseWriter, r *http.Request) string {
+				return tc.userID
+			}
+			defer func() { GetUserIdFromSession = originalGetUserIdFromSession }()
+
+			// Call the handler
+			CommentLikeHandler(w, req)
+
+			// Check response status
+			resp := w.Result()
+			if resp.StatusCode != tc.expectedStatus {
+				t.Errorf("Expected status %d, got %d", tc.expectedStatus, resp.StatusCode)
+			}
+
+			// Check error message if expected
+			if tc.expectedError != "" {
+				body, _ := ioutil.ReadAll(resp.Body)
+				if !strings.Contains(string(body), tc.expectedError) {
+					t.Errorf("Expected error message '%s', got '%s'", tc.expectedError, string(body))
+				}
+			}
+
+			// Optional database state check
+			if tc.checkDBFunc != nil {
+				tc.checkDBFunc(t, mockDB)
+			}
+
+			// Optional response check
+			if tc.checkResponse != nil {
+				tc.checkResponse(t, resp)
 			}
 		})
 	}

@@ -233,16 +233,29 @@ var GetCommentReplies = func(commentID int) ([]Comment, error) {
 
 // Get user ID from session
 var GetUserIdFromSession = func(w http.ResponseWriter, r *http.Request) string {
-	cookie, err := r.Cookie("session-name")
+	sessionCookie, err := r.Cookie("session_id")
 	if err != nil {
-		log.Printf("Error getting session cookie: %v", err)
-		http.Error(w, "Error getting session", http.StatusInternalServerError)
 		return ""
 	}
 
-	// Decode or parse the session value here
-	// This is a placeholder - you'll need to implement your own session decoding logic
-	userID := cookie.Value
+	var userID string
+	err = db.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", sessionCookie.Value).Scan(&userID)
+	if err == sql.ErrNoRows {
+		// Clear invalid session
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_id",
+			Value:    "",
+			Path:     "/",
+			Expires:  time.Unix(0, 0),
+			MaxAge:   -1,
+			HttpOnly: true,
+		})
+		http.Error(w, "Unauthorized: Invalid session", http.StatusUnauthorized)
+		return ""
+	} else if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return ""
+	}
 
 	return userID
 }
