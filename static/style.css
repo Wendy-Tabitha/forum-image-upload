@@ -1,16 +1,16 @@
 :root {
-    --primary-color: #4A7C8C;
-    /* Muted teal */
-    --secondary-color: #B8D8D2;
-    /* Light mint */
-    --background-color: #F4F4F4;
-    /* Soft gray */
-    --text-color: #333333;
-    /* Dark gray for text */
-    --link-color: #2A4D69;
-    /* Deep blue for links */
-    --border-color: #D1D1D1;
-    /* Light gray for borders */
+    --primary-color: #4A7C8C; /* Muted teal */
+    --secondary-color: #B8D8D2; /* Light mint */
+    --background-color: #F4F4F4; /* Soft gray */
+    --text-color: #333333; /* Dark gray for text */
+    --link-color: #2A4D69; /* Deep blue for links */
+    --border-color: #D1D1D1; /* Light gray for borders */
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 body {
@@ -18,13 +18,10 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     margin: 0;
-    padding: 0;
     padding: 0 15px;
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
     color: var(--primary-color);
 }
 
@@ -104,17 +101,23 @@ nav a:hover {
     margin-bottom: 20px;
 }
 
+#posts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
 .post {
-    margin-bottom: 30px;
-    padding: 15px;
-    background-color: var(--background-color);
+    flex: 1 1 calc(33.333% - 16px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    background-color: white;
     border-radius: 5px;
-    transition: transform 0.2s;
-    height: auto;
+    transition: transform 0.3s ease;
 }
 
 .post:hover {
-    transform: translateY(-2px);
+    transform: translateY(-5px);
 }
 
 .post h3 {
@@ -151,30 +154,6 @@ nav a:hover {
     font-style: italic;
 }
 
-@media (max-width: 768px) {
-    .profile-sections {
-        flex-direction: column;
-    }
-    .profile-section {
-        min-width: auto;
-    }
-}
-
-.post {
-    /* border: 1px solid var(--border-color); */
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: white;
-    border-radius: 5px;
-    width: 100%;
-    max-width: 800px;
-    box-shadow: 0 2px 4px rgba(179, 179, 179, 0.1);
-}
-
-.post:hover {
-    box-shadow: 0 2px 4px rgba(36, 36, 36, 0.1);
-}
-
 form {
     background-color: var(--secondary-color);
     padding: 20px;
@@ -200,8 +179,7 @@ button {
 }
 
 button:hover {
-    background-color: #3A6B7A;
-    /* Darker shade for hover effect */
+    background-color: #3A6B7A; /* Darker shade for hover effect */
 }
 
 header {
@@ -247,12 +225,6 @@ header {
     border-radius: 0 4px 4px 0;
 }
 
-nav {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
 .auth-button {
     padding: 8px 16px;
     border-radius: 4px;
@@ -264,62 +236,6 @@ nav {
 
 .auth-button:hover {
     background-color: #3a6270;
-}
-
-/* Mobile Responsiveness */
-@media screen and (max-width: 768px) {
-    header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .logo {
-        text-align: center;
-        margin-bottom: 15px;
-    }
-    
-    .search-bar {
-        width: 100%;
-        margin-bottom: 15px;
-    }
-    
-    nav {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    nav a {
-        text-align: center;
-        padding: 10px;
-        margin: 5px 0;
-    }
-    
-    .auth-button {
-        display: block;
-        width: 100%;
-    }
-}
-
-/* Tablet Responsiveness */
-@media screen and (min-width: 769px) and (max-width: 1024px) {
-    header {
-        padding: 10px;
-    }
-    
-    .search-bar {
-        max-width: 400px;
-    }
-}
-
-/* Accessibility Enhancements */
-@media (max-width: 480px) {
-    nav a, .auth-button {
-        min-height: 44px;
-        min-width: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
 }
 
 .container {
@@ -336,11 +252,39 @@ nav {
     background-color: white;
     padding: 15px;
     position: sticky;
-    top: 80px;
-    /* Accounts for header height + some spacing */
+    top: 80px; /* Accounts for header height + some spacing */
     height: fit-content;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+}
+
+.sidebar h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    color: var(--link-color);
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
 main {
@@ -358,103 +302,6 @@ main {
     margin-top: 0;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(179, 179, 179, 0.1);
-}
-
-.auth-button {
-    display: inline-block;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    text-decoration: none !important;
-}
-
-.login {
-    background-color: transparent;
-    border: 1px solid var(--primary-color);
-    color: var(--primary-color);
-}
-
-.login:hover {
-    background-color: rgba(74, 124, 140, 0.1);
-}
-
-.register {
-    background-color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-    color: white;
-}
-
-.register:hover {
-    background-color: #3A6B7A;
-}
-
-.create-post {
-    background-color: var(--primary-color);
-    color: white;
-    margin-top: 10px;
-    margin-right: 50px;
-    /* border: 1px solid #28a745; */
-}
-
-.create-post:hover {
-    background-color: var(--link-color);
-}
-
-/* Remove the old create-post-button styles if they exist */
-.create-post-button {
-    display: none;
-}
-
-.sidebar-footer {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid var(--border-color);
-}
-
-.logout-link {
-    background-color: rgb(204, 204, 204);
-    color: var(--text-color);
-    /* Red color for logout */
-    border-radius: 8px;
-    text-align: center;
-    text-decoration: none;
-    display: block;
-    padding: 8px 0;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.logout-link:hover {
-    color: #bd2130;
-    /* Darker red on hover */
-    text-decoration: none;
-}
-
-/* Category link styles */
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar ul li {
-    margin-bottom: 8px;
-}
-
-.sidebar ul li a {
-    display: block;
-    padding: 8px;
-    color: var(--text-color);
-    text-decoration: none;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.sidebar ul li a:hover {
-    background-color: rgb(204, 204, 204);
-    text-decoration: none;
-    color: var(--primary-color);
 }
 
 .auth-container {
@@ -502,18 +349,6 @@ main {
     text-decoration: underline;
 }
 
-.logo-link {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.logo-link:hover {
-    text-decoration: none;
-    color: var(--primary-color);
-}
-
 .posts-header {
     display: flex;
     justify-content: space-between;
@@ -530,7 +365,6 @@ main {
     transition: all 0.3s ease;
 }
 
-/* Create Post Form Styles */
 #createPostForm {
     background-color: white;
     padding: 30px;
@@ -612,7 +446,6 @@ main {
     background-color: #f5f5f5;
 }
 
-/* Form actions container */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -622,32 +455,24 @@ main {
 
 .posted-on {
     font-size: 0.8em;
-    /* Smaller font size */
     text-align: right;
-    /* Align text to the right */
     color: #666;
-    /* Optional: Change color for better visibility */
 }
 
 .checkbox-group {
     display: flex;
     flex-wrap: wrap;
-    /* Allows wrapping to the next line if necessary */
-    /* gap: 10px; /* Space between checkboxes */
 }
 
-*/ .checkbox-group label {
+.checkbox-group label {
     display: flex;
     align-items: center;
-    /* Aligns checkbox and label text */
 }
 
 .checkbox-group input[type="checkbox"] {
     margin-right: 8px;
-    /* Space between the checkbox and the label text */
 }
 
-/* Comments Section */
 .comments-section {
     margin-top: 20px;
     padding-top: 20px;
@@ -692,7 +517,7 @@ main {
 
 .comment-author {
     font-weight: bold;
-    color: var(--primary-color);
+    color: var (--primary-color);
 }
 
 .comment-date {
@@ -717,7 +542,6 @@ main {
     text-decoration: underline;
 }
 
-/* Comment Form */
 .comment-form, .reply-form {
     margin-top: 15px;
     padding: 15px;
@@ -765,26 +589,72 @@ img {
     height: auto;
 }
 
-@media screen and (max-width: 600px) {
-    body {
-        font-size: 14px;
+/* Mobile Responsiveness */
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .logo {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    
+    .search-bar {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    nav a {
+        text-align: center;
+        padding: 10px;
+        margin: 5px 0;
+    }
+    
+    .auth-button {
+        display: block;
+        width: 100%;
     }
 
-    nav {
+    .profile-sections {
         flex-direction: column;
     }
 
-    .profile-header {
+    .profile-section {
+        min-width: auto;
+    }
+
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        display: none; /* Hide sidebar on small screens */
+    }
+
+    .post {
+        flex: 1 1 100%;
+    }
+}
+
+/* Tablet Responsiveness */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    header {
         padding: 10px;
     }
-}
-
-@media screen and (min-width: 601px) and (max-width: 1024px) {
-    body {
-        font-size: 16px;
+    
+    .search-bar {
+        max-width: 400px;
     }
 }
 
+/* Accessibility Enhancements */
 @media (max-width: 480px) {
     nav a, .auth-button {
         min-height: 44px;
@@ -793,104 +663,8 @@ img {
         align-items: center;
         justify-content: center;
     }
-}
 
-@media screen and (max-width: 768px) {
-    header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    nav {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    nav a {
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-}
-
-@media (max-width: 480px) {
     body {
         padding: 0 10px;
-    }
-    .container {
-        flex-direction: column;
-    }
-    .sidebar {
-        display: none; /* Hide sidebar on small screens */
-    }
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-    padding: 0 15px;
-}
-
-@media screen and (max-width: 768px) {
-    header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    nav {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    nav a {
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    body {
-        padding: 0 10px;
-    }
-    .container {
-        flex-direction: column;
-    }
-    .sidebar {
-        display: none; /* Hide sidebar on small screens */
-    }
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-    /* Removed max-width to allow fluidity on smaller devices */
-    padding: 0 15px;
-}
-
-@media screen and (max-width: 768px) {
-    header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    nav {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    nav a {
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    body {
-        padding: 0 10px;
-    }
-    .container {
-        flex-direction: column;
-    }
-    .sidebar {
-        display: none; /* Hide sidebar on small screens */
     }
 }
