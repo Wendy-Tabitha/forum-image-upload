@@ -1,13 +1,15 @@
-# Use the official Golang image
-FROM golang:1.20-alpine
-
-# Set the working directory
+# Stage 1: Build the application
+FROM golang:1.23-alpine AS builder
 WORKDIR /app
 
-# Copy the Go module files
-COPY go.mod go.sum ./
+# Install build dependencies for SQLite
+RUN apk add --no-cache gcc musl-dev
 
-# Download dependencies
+# Enable CGO
+ENV CGO_ENABLED=1
+
+# Copy and download dependencies
+COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the source code
@@ -15,6 +17,13 @@ COPY . .
 
 # Build the application
 RUN go build -o forum .
+
+# Stage 2: Create the final lightweight image
+FROM alpine:latest
+WORKDIR /app
+
+# Copy the binary from the builder stage
+COPY --from=builder /app/forum .
 
 # Expose the application port
 EXPOSE 8080
