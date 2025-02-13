@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +12,10 @@ import (
 	"strings"
 	"testing"
 )
+
+var parseTemplate = func(filenames ...string) (*template.Template, error) {
+	return template.New("mock").Parse("<html></html>") // Mock template
+}
 
 func TestHomeHandler(t *testing.T) {
 	// Store original functions to restore after test
@@ -907,5 +912,55 @@ func TestCommentLikeHandler(t *testing.T) {
 				tc.checkResponse(t, resp)
 			}
 		})
+	}
+}
+
+func TestFilterHandler(t *testing.T) {
+	// Create a test server to handle requests
+	testServer := httptest.NewServer(http.HandlerFunc(FilterHandler))
+	defer testServer.Close()
+
+	// Mock the database and session
+	db, _ = sql.Open("sqlite3", ":memory:")
+	InitDB() // Initialize the in-memory database
+
+	// Test case: User is logged in
+	req, err := http.NewRequest("GET", testServer.URL+"?category=all", nil)
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+	// Set a valid session cookie
+	cookie := &http.Cookie{Name: "session_id", Value: "valid_session_id"}
+	req.AddCookie(cookie)
+
+	// Simulate a user being logged in
+	_, err = db.Exec("INSERT INTO sessions (session_id, user_id) VALUES (?, ?)", "valid_session_id", "user123")
+	if err != nil {
+		t.Fatalf("Failed to insert session: %v", err)
+	}
+
+	// Perform the request
+	resp := httptest.NewRecorder()
+	FilterHandler(resp, req)
+
+	// Check the response status
+	if resp.Code != http.StatusOK {
+		t.Errorf("Expected status OK, got %v", resp.Code)
+	}
+
+	// Test case: User is not logged in
+	req, err = http.NewRequest("GET", testServer.URL+"?category=all", nil)
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+	// No session cookie
+
+	// Perform the request
+	resp = httptest.NewRecorder()
+	FilterHandler(resp, req)
+
+	// Check the response status
+	if resp.Code != http.StatusOK {
+		t.Errorf("Expected status OK, got %v", resp.Code)
 	}
 }

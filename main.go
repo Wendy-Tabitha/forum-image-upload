@@ -26,11 +26,6 @@ func main() {
 	// Initialize the database
 	handlers.InitDB()
 
-	// Run migrations
-	if err := handlers.RunMigrations(); err != nil {
-		log.Fatal("Error running migrations:", err)
-	}
-
 	// Start the server
 	log.Println("Server is running on http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
@@ -38,3 +33,30 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
+// func handler(w http.ResponseWriter, r *http.Request) {
+// 	switch r.URL.Path {
+// 	case "/":
+// 		handlers.HomeHandler(w, r)
+// 	case "/login":
+// 		handlers.LoginHandler(w, r)
+// 	case "/register":
+// 		handlers.RegisterHandler(w, r)
+// 	case "/post":
+// 		handlers.PostHandler(w, r)
+// 	case "/like":
+// 		handlers.LikeHandler(w, r)
+// 	case "/filter":
+// 		handlers.FilterHandler(w, r)
+// 	case "/comment":
+// 		handlers.CommentHandler(w, r)
+// 	case "/comment/like":
+// 		handlers.CommentLikeHandler(w, r)
+// 	case "/logout":
+// 		handlers.LogoutHandler(w, r)
+// 	case "/profile":
+// 		handlers.ProfileHandler(w, r)
+// 	default:
+// 		handlers.RenderError(w, r, "Page not found", http.StatusNotFound)
+// 	}
+// }

@@ -42,6 +42,7 @@ func InitDB() {
 
     CREATE TABLE IF NOT EXISTS comments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        parent_id INTEGER DEFAULT NULL REFERENCES comments(id) ON DELETE CASCADE,
         post_id INTEGER,
         user_id INTEGER, 
         content TEXT,
@@ -64,6 +65,17 @@ func InitDB() {
         session_id TEXT PRIMARY KEY NOT NULL,
         user_id TEXT ,
         FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS comment_likes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        comment_id INTEGER NOT NULL,
+        is_like BOOLEAN NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
+        UNIQUE(user_id, comment_id)
     );
     `
 	_, err = db.Exec(createTable)

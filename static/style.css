@@ -56,8 +56,9 @@ nav a:hover {
 
 .profile-header {
     text-align: center;
-    margin: 20px 0;
-    padding: 20px;
+    padding: 10px;
+    padding-top: 33px;
+    padding-bottom: 33px;
     background-color: white;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -251,7 +252,12 @@ header {
 }
 
 .auth-button:hover {
+    text-decoration: none;
     background-color: #3a6270;
+}
+
+.material-icons:hover {
+    text-decoration: none;
 }
 
 .container {
@@ -283,7 +289,8 @@ header {
     position: sticky;
     top: 80px;
     /* Accounts for header height + some spacing */
-    height: fit-content;
+    height: 600px;
+    overflow-y: scroll;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     margin-top: 100px;
@@ -649,6 +656,61 @@ img {
     /* Use your primary color */
 }
 
+.error-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.error-icon {
+    font-size: 48px;
+    color: #3a6270;
+    margin-bottom: 20px;
+}
+
+.error-code {
+    font-size: 24px;
+    color: #3a6270;
+    margin-bottom: 10px;
+}
+
+.error-message {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.error-help {
+    font-size: 16px;
+    color: #888;
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #3a6270;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.back-button:hover {
+    background-color: #3a6270;
+}
+
+.back-button i {
+    margin-right: 8px;
+}
+
 @media (max-width: 768px) {
     .hamburger {
         display: block;
@@ -687,11 +749,6 @@ img {
         text-align: center;
         padding: 10px;
         margin: 5px 0;
-    }
-
-    .auth-button {
-        display: block;
-        width: 100%;
     }
 
     .profile-sections {

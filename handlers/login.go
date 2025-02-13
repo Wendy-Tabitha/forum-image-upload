@@ -90,7 +90,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		// Redirect to home page
-		http.Redirect(w, r, "/post", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
