@@ -110,7 +110,7 @@ nav a:hover {
 }
 
 #posts {
-    display: flex;
+    /* display: flex; */
     flex-wrap: wrap;
     gap: 16px;
 }
