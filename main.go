@@ -1,13 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/Wendy-Tabitha/discussion/handlers"
 )
 
 func main() {
+	args := os.Args
+	if len(args) != 1 {
+		fmt.Println("usage: go run .")
+		return
+	}
 	// Serve static files from the "static" directory
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
