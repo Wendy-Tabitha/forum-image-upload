@@ -14,7 +14,23 @@ This project is designed to create a web forum that allows users to communicate 
 - **Likes and Dislikes**: Registered users can like or dislike posts and comments. The number of likes and dislikes is visible to all users.
 - **Filtering**: Users can filter posts by categories, created posts, and liked posts.
 
-## Installation Instructions
+## Technologies Used
+
+- **Backend**: Go (Golang)
+- **Database**: SQLite
+- **Frontend**: HTML, CSS, JavaScript (no frameworks or libraries)
+- **Containerization**: Docker
+- **Password Encryption**: bcrypt (Bonus)
+- **Session Management**: UUID (Bonus)
+
+---
+## Setup Instructions
+
+### Prerequisites
+- Docker installed on your machine.
+- Basic knowledge of Go and SQL.
+
+### Steps to Run the Project
 To install this project, follow these steps:
 1. Clone the repository: 
    ```bash
