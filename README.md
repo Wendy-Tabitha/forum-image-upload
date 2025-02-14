@@ -1,72 +1,90 @@
 # Web Forum Project
 
-## Overview
-
-This project involves creating a web forum that allows users to communicate by creating posts and comments. The forum supports features such as liking/disliking posts and comments, associating categories with posts, and filtering posts based on categories, created posts, and liked posts. The project uses **SQLite** for database management and **Docker** for containerization.
+## Project Overview
+This project is designed to create a web forum that allows users to communicate by creating posts and comments. Key features include liking/disliking posts and comments, associating categories with posts, and filtering posts based on various criteria.
 
 ## Features
+- **User Authentication**: Secure access with user login and registration.
+  - **Registration**: Users can register by providing a unique email, username, and password. Passwords are encrypted before storage.
+  - **Login**: Users can log in to access the forum. Sessions are managed using cookies with an expiration date.
+  - **Session Management**: Each user can have only one active session at a time.
 
-### User Authentication
-- **Registration**: Users can register by providing a unique email, username, and password. Passwords are encrypted before storage.
-- **Login**: Users can log in to access the forum. Sessions are managed using cookies with an expiration date.
-- **Session Management**: Each user can have only one active session at a time. UUIDs are used for session management (Bonus).
+- **Post Management**: Create and view post(s), .
+- **Comments**: Registered users can comment on posts, fostering discussion.
+- **Likes and Dislikes**: Registered users can like or dislike posts and comments. The number of likes and dislikes is visible to all users.
+- **Filtering**: Users can filter posts by categories, created posts, and liked posts.
 
-### Communication
-- **Posts**: Registered users can create posts and associate them with one or more categories.
-- **Comments**: Registered users can comment on posts.
-- **Visibility**: Posts and comments are visible to all users (registered and non-registered).
-
-### Likes and Dislikes
-- **Likes/Dislikes**: Registered users can like or dislike posts and comments.
-- **Count Visibility**: The number of likes and dislikes is visible to all users.
-
-### Filtering
-- **Categories**: Users can filter posts by categories.
-- **Created Posts**: Registered users can filter posts they have created.
-- **Liked Posts**: Registered users can filter posts they have liked.
-
----
-
-## Technologies Used
-
-- **Backend**: Go (Golang)
-- **Database**: SQLite
-- **Frontend**: HTML, CSS, JavaScript (no frameworks or libraries)
-- **Containerization**: Docker
-- **Password Encryption**: bcrypt (Bonus)
-- **Session Management**: UUID (Bonus)
-
----
-
-## Setup Instructions
-
-### Prerequisites
-- Docker installed on your machine.
-- Basic knowledge of Go and SQL.
-
-### Steps to Run the Project
-
-1. **Clone the Repository**:
+## Installation Instructions
+To install this project, follow these steps:
+1. Clone the repository: 
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
-   cd your-repo-name
+   git clone https://learn.zone01kisumu.ke/git/hanapiko/forum
+2. Navigate to the project directory:
+   ```bash
+   cd forum
+   ```
+3. Install the required dependencies:
+   ```bash
+   go get ./...
+   ```
 
-2. Build the Docker image
-```bash
-docker build -t web-forum .
-```
-
-3. Run the Docker Container
+## Usage
+To run the project, use the following command:
 ```bash
 docker run -p 8080:8080 web-forum
 ```
-4. Access the Forum
-- Open your browser and go to http://localhost:8080.
+You can access the application at [http://localhost:8080](http://localhost:8080).
 
-### Error Handling
-- HTTP Status Codes: Proper HTTP status codes are returned for errors (e.g., 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Internal Server Error).
+## Usage Script
+To build and run the Docker container, you can use the following bash script:
 
-- User-Friendly Messages: Error responses include user-friendly messages.
+```bash
+#!/bin/bash
 
-### License
-This project is licensed under the MIT License. See the LICENSE file for details.
+# Variables
+IMAGE_NAME="forum-app"
+CONTAINER_NAME="forum-container"
+PORT=8080
+
+# Stop and remove any existing container
+docker stop $CONTAINER_NAME 2>/dev/null && docker rm $CONTAINER_NAME 2>/dev/null
+
+# Build the Docker image
+docker build -t $IMAGE_NAME . && \
+echo "Docker image built successfully." || \
+{ echo "Failed to build Docker image."; exit 1; }
+
+# Run the Docker container
+docker run -d --name $CONTAINER_NAME -p $PORT:8080 $IMAGE_NAME && \
+echo "Docker container is running on port $PORT." || \
+{ echo "Failed to run Docker container."; exit 1; }
+```
+
+This script will stop and remove any existing container, build the Docker image, and run the container, making it accessible on port 8080.
+
+## Testing & Troubleshooting
+To run tests, use:
+```bash
+go test ./...
+```
+Common issues:
+- **Port Conflict**: If you see a "port already in use" error, check for other applications using port 8080.
+- **Database Issues**: Verify your database configuration if you encounter connection problems.
+
+## Contributing
+We welcome contributions! Please follow these guidelines:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Submit a pull request with a clear description of your changes.
+
+
+## Authors
+- antmusumba - [GitHub Profile](https://github.com/antmusumba)
+- weakinyi - [GitHub Profile](https://github.com/Wendy-Tabitha)
+- Philip38-hub - [GitHub Profile](https://github.com/Philip38-hub)
+- hanapiko - [GitHub Profile](https://github.com/hanapiko)
+
+
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for more details.
