@@ -29,38 +29,22 @@ To install this project, follow these steps:
    ```
 
 ## Usage
-To run the project, use the following command:
+To run the project with docker, use the following command:
+1. Make it executable with this command
 ```bash
-docker run -p 8080:8080 web-forum
+chmod +x script.sh
 ```
-You can access the application at [http://localhost:8080](http://localhost:8080).
-
-## Usage Script
-To build and run the Docker container, you can use the following bash script:
-
+2. Run with this command
 ```bash
-#!/bin/bash
-
-# Variables
-IMAGE_NAME="forum-app"
-CONTAINER_NAME="forum-container"
-PORT=8080
-
-# Stop and remove any existing container
-docker stop $CONTAINER_NAME 2>/dev/null && docker rm $CONTAINER_NAME 2>/dev/null
-
-# Build the Docker image
-docker build -t $IMAGE_NAME . && \
-echo "Docker image built successfully." || \
-{ echo "Failed to build Docker image."; exit 1; }
-
-# Run the Docker container
-docker run -d --name $CONTAINER_NAME -p $PORT:8080 $IMAGE_NAME && \
-echo "Docker container is running on port $PORT." || \
-{ echo "Failed to run Docker container."; exit 1; }
+./script.sh
 ```
+- This script will stop and remove any existing container, build the Docker image, and run the container, making it accessible on port 8080.
 
-This script will stop and remove any existing container, build the Docker image, and run the container, making it accessible on port 8080.
+## Usage without docker
+- Run with
+``` go
+go run .
+```
 
 ## Testing & Troubleshooting
 To run tests, use:
