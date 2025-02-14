@@ -27,8 +27,8 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"success": false,
-			"error":   "You must be logged in to like a post",
+			"success":  false,
+			"error":    "You must be logged in to like a post",
 			"redirect": "/login", // Add a redirect URL
 		})
 		return

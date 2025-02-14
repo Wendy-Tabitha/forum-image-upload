@@ -103,6 +103,7 @@ var (
 
 // RenderErrorFunc is the type for rendering error responses
 type RenderErrorFunc func(w http.ResponseWriter, r *http.Request, errorKey string, statusCode int)
+
 // RenderError renders the error template with the given error message and status code
 func renderError(w http.ResponseWriter, r *http.Request, errorKey string, statusCode int) {
 	// Get user's login status
