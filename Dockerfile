@@ -25,6 +25,12 @@ WORKDIR /app
 # Copy the binary from the builder stage
 COPY --from=builder /app/forum .
 
+# Copy the templates directory from the builder stage
+COPY --from=builder /app/templates /app/templates
+
+# Copy the static directory from the builder stage
+COPY --from=builder /app/static /app/static
+
 # Expose the application port
 EXPOSE 8080
 
