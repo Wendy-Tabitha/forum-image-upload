@@ -128,6 +128,19 @@
 
                     <!-- Comments Section -->
                     <div class="comments-section" id="comments-{{.ID}}">
+                         <!-- Comment Form -->
+                    <div class="comment-form" id="comment-form-{{.ID}}" style="display: none;">
+                        {{if $.IsLoggedIn}}
+                        <form method="POST" action="/comment">
+                            <input type="hidden" name="post_id" value="{{.ID}}">
+                            <textarea name="content" placeholder="Write your comment..." required></textarea>
+                            <button type="submit">Comment</button>
+                        </form>
+                        {{else}}
+                        <p>Please <a href="/login">login</a> to comment.</p>
+                        {{end}}
+                    </div>
+                    
                         {{if .Comments}}
                         {{range .Comments}}
                         <div class="comment" data-comment-id="{{.ID}}">
@@ -191,19 +204,6 @@
                             {{end}}
                         </div>
                         {{end}}
-                        {{end}}
-                    </div>
-
-                    <!-- Comment Form -->
-                    <div class="comment-form" id="comment-form-{{.ID}}" style="display: none;">
-                        {{if $.IsLoggedIn}}
-                        <form method="POST" action="/comment">
-                            <input type="hidden" name="post_id" value="{{.ID}}">
-                            <textarea name="content" placeholder="Write your comment..." required></textarea>
-                            <button type="submit">Comment</button>
-                        </form>
-                        {{else}}
-                        <p>Please <a href="/login">login</a> to comment.</p>
                         {{end}}
                     </div>
                 </div>
