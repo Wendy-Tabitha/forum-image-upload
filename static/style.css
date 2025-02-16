@@ -195,7 +195,7 @@ button:hover {
 header {
     background-color: white;
     color: var(--text-color);
-    padding: 10px;
+    padding: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -211,6 +211,8 @@ header {
 
 .logo {
     flex-shrink: 0;
+    margin-left: 20px;
+    margin-top: 0;
 }
 
 .logo-link {
@@ -249,6 +251,18 @@ header {
     background-color: var(--primary-color);
     color: white;
     transition: background-color 0.3s ease;
+}
+
+.auth-button.login {
+    margin-top: 10px;
+}
+
+.auth-button.register {
+    margin-top: 10px;
+}
+
+.auth-button.create-post {
+    margin-top: 10px;
 }
 
 .auth-button:hover {
