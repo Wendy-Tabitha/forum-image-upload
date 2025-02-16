@@ -13,13 +13,13 @@
 
 <body>
     <header>
+        <div class="hamburger" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i> <!-- Font Awesome icon for hamburger -->
+        </div>
         <div class="logo">
             <a href="{{if .IsLoggedIn}}/post{{else}}/{{end}}" class="logo-link">Forum</a>
         </div>
 
-        <div class="hamburger" onclick="toggleMenu()">
-            <i class="fas fa-bars"></i> <!-- Font Awesome icon for hamburger -->
-        </div>
 
         <nav>
             {{if .IsLoggedIn}}
