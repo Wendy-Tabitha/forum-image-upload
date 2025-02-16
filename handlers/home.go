@@ -7,6 +7,10 @@ import (
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		renderError(w, r, "Page not found", http.StatusNotFound)
+		return
+	}
 	userID := GetUserIdFromSession(w, r)
 
 	// Query to fetch all posts along with user info, categories, like counts, and comments

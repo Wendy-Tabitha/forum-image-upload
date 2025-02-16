@@ -309,6 +309,29 @@ header {
     transition: color 0.3s ease;
 }
 
+.logout-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: rgb(204, 204, 204);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logout-dropdown a {
+    background-color: rgb(204, 204, 204);
+    color: var(--text-color);
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none !important;
+    display: block;
+    padding: 8px 0;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
 .sidebar h3 {
     color: var(--primary-color);
     margin-bottom: 15px;

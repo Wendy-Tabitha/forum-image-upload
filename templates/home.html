@@ -23,8 +23,13 @@
 
         <nav>
             {{if .IsLoggedIn}}
-            <a href="/profile" class="material-icons"
-                style="font-size:36px; color: #4A7C8C; vertical-align: middle;">person</a>
+            <div class="profile-icon" style="position: relative;">
+                <a href="/profile" class="material-icons"
+                    style="font-size:36px; color: #4A7C8C; vertical-align: middle;">person</a>
+                <div class="logout-dropdown">
+                    <a href="/logout" class="logout-link">Logout</a>
+                </div>
+            </div>
             <a href="#" class="auth-button create-post" onclick="toggleCreatePost()">Create Post</a>
             {{else}}
             <a href="/login" class="auth-button login">Login</a>
@@ -411,6 +416,13 @@
             const sidebar = document.getElementById('sidebar');
             sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
         }
+
+        document.querySelector('.profile-icon').addEventListener('mouseenter', function() {
+            document.querySelector('.logout-dropdown').style.display = 'block';
+        });
+            document.querySelector('.profile-icon').addEventListener('mouseleave', function() {
+            document.querySelector('.logout-dropdown').style.display = 'none';
+        });
     </script>
 </body>
 

@@ -76,5 +76,4 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect to the posts page after successful creation
 	http.Redirect(w, r, "/", http.StatusSeeOther)
-	return
 }
