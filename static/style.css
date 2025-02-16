@@ -759,12 +759,12 @@ img {
 
     .hamburger {
         display: block; /* Show the hamburger menu */
-        margin-bottom: 15px;
+        margin-bottom: 8px;
     }
 
     .logo {
         text-align: left; /* Align logo to the left */
-        margin-bottom: 15px; /* Remove bottom margin */
+        margin-bottom: 8px; /* Remove bottom margin */
     }
 
     nav {
@@ -817,6 +817,6 @@ img {
     }
 
     .logo {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 }
