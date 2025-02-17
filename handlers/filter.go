@@ -8,6 +8,31 @@ import (
 	"time"
 )
 
+var validCategories = []string{
+	"technology",
+	"general",
+	"lifestyle",
+	"entertainment",
+	"gaming",
+	"food",
+	"business",
+	"religion",
+	"health",
+	"music",
+	"sports",
+	"beauty",
+	"jobs",
+}
+
+func isValidCategory(category string) bool {
+	for _, validCategory := range validCategories {
+		if validCategory == category {
+			return true
+		}
+	}
+	return false
+}
+
 func FilterHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if the user is logged in
 	var userID string
@@ -37,6 +62,12 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get the category from the query parameters
 	category := r.URL.Query().Get("category")
+
+	// Validate the category
+	if category != "all" && category != "" && !isValidCategory(category) {
+		RenderError(w, r, "Invalid category selected", http.StatusBadRequest)
+		return
+	}
 
 	// Query to fetch posts based on the selected category
 	query := `
