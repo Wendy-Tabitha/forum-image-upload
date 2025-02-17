@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -38,8 +39,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Handle POST request (create a new post)
-	title := r.FormValue("title")
-	content := r.FormValue("content")
+	title := strings.TrimSpace(r.FormValue("title"))
+	content := strings.TrimSpace(r.FormValue("content"))
 	categories := r.Form["category"] // Get multiple categories
 
 	// Validate input
