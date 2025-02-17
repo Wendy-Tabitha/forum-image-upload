@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var PostID int
+
 // Comment handler for processing form submissions
 func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -16,6 +18,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	postID := r.FormValue("post_id")
+	PostID, _ = strconv.Atoi(postID)
 	content := r.FormValue("content")
 	parentID := r.FormValue("parent_id") // New: Get parent comment ID if this is a reply
 	userID := GetUserIdFromSession(w, r) // Fetch user ID from session
@@ -123,7 +126,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect back to the post
-	http.Redirect(w, r, "/post/"+postID, http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // Fetch comments for a specific post
