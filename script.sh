@@ -8,6 +8,10 @@ PORT=8080
 # Stop and remove any existing container
 docker stop $CONTAINER_NAME 2>/dev/null && docker rm $CONTAINER_NAME 2>/dev/null
 
+# Prune only unused images and stopped containers (safer approach)
+docker image prune -f
+docker container prune -f
+
 # Build the Docker image
 docker build -t $IMAGE_NAME . && \
 echo "Docker image built successfully." || \
