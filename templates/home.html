@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Font Awesome -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Forum - Posts</title>
 </head>
@@ -14,12 +13,11 @@
 <body>
     <header>
         <div class="hamburger" onclick="toggleMenu()">
-            <i class="fas fa-bars"></i> <!-- Font Awesome icon for hamburger -->
+            <i class="fas fa-bars"></i>
         </div>
         <div class="logo">
             <a href="{{if .IsLoggedIn}}/post{{else}}/{{end}}" class="logo-link">Forum</a>
         </div>
-
 
         <nav>
             {{if .IsLoggedIn}}
@@ -57,13 +55,12 @@
                 <li><a href="/filter?category=jobs">Jobs</a></li>
             </ul>
             <div class="sidebar-footer">
-                {{if .IsLoggedIn}} <!-- Only show logout link if user is logged in -->
+                {{if .IsLoggedIn}}
                 <a href="/logout" class="logout-link">Logout</a>
                 {{end}}
             </div>
         </aside>
         <main>
-            <!-- Create Post Form (Shown only if logged in) -->
             {{if .IsLoggedIn}}
             <div id="createPostForm" style="display: none;">
                 <h1>Create a New Post</h1>
@@ -100,7 +97,6 @@
             </div>
             {{end}}
 
-            <!-- Posts List -->
             <h1 id="postsHeading">
                 {{if .SelectedCategory}}
                 {{.SelectedCategory}}
@@ -132,20 +128,20 @@
                     </div>
 
                     <!-- Comments Section -->
-                    <div class="comments-section" id="comments-{{.ID}}">
-                         <!-- Comment Form -->
-                    <div class="comment-form" id="comment-form-{{.ID}}" style="display: none;">
-                        {{if $.IsLoggedIn}}
-                        <form method="POST" action="/comment">
-                            <input type="hidden" name="post_id" value="{{.ID}}">
-                            <textarea name="content" placeholder="Write your comment..." required></textarea>
-                            <button type="submit">Comment</button>
-                        </form>
-                        {{else}}
-                        <p>Please <a href="/login">login</a> to comment.</p>
-                        {{end}}
-                    </div>
-                    
+                    <div class="comments-section" id="comments-{{.ID}}" style="display: none;">
+                        <!-- Comment Form -->
+                        <div class="comment-form" id="comment-form-{{.ID}}" style="display: none;">
+                            {{if $.IsLoggedIn}}
+                            <form method="POST" action="/comment">
+                                <input type="hidden" name="post_id" value="{{.ID}}">
+                                <textarea name="content" placeholder="Write your comment..." required></textarea>
+                                <button type="submit">Comment</button>
+                            </form>
+                            {{else}}
+                            <p>Please <a href="/login">login</a> to comment.</p>
+                            {{end}}
+                        </div>
+
                         {{if .Comments}}
                         {{range .Comments}}
                         <div class="comment" data-comment-id="{{.ID}}">
@@ -275,7 +271,6 @@
                 });
         }
 
-
         function toggleCommentLike(commentId, isLike) {
             if (isProcessing) return; // Prevent multiple rapid clicks
             isProcessing = true;
@@ -396,10 +391,13 @@
 
         function toggleCommentForm(postId) {
             const commentForm = document.getElementById(`comment-form-${postId}`);
+            const commentsSection = document.getElementById(`comments-${postId}`);
             if (commentForm.style.display === 'none') {
                 commentForm.style.display = 'block';
+                commentsSection.style.display = 'block'; // Show comments section when the form is shown
             } else {
                 commentForm.style.display = 'none';
+                commentsSection.style.display = 'none'; // Hide comments section when the form is hidden
             }
         }
 
@@ -420,7 +418,7 @@
         document.querySelector('.profile-icon').addEventListener('mouseenter', function() {
             document.querySelector('.logout-dropdown').style.display = 'block';
         });
-            document.querySelector('.profile-icon').addEventListener('mouseleave', function() {
+        document.querySelector('.profile-icon').addEventListener('mouseleave', function() {
             document.querySelector('.logout-dropdown').style.display = 'none';
         });
     </script>
