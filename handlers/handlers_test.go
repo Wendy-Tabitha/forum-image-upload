@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-var parseTemplate = func(filenames ...string) (*template.Template, error) {
+var parseTemplate = func(_ ...string) (*template.Template, error) {
 	return template.New("mock").Parse("<html></html>") // Mock template
 }
 
