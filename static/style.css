@@ -303,7 +303,8 @@ header {
     position: sticky;
     top: 80px;
     /* Accounts for header height + some spacing */
-    height: 800px;
+    height: 600px;
+    overflow-y: scroll;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     margin-top: 100px;
