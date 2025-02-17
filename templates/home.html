@@ -367,28 +367,6 @@
             return true; // Allow form submission
         }
 
-        function filterByCategory(category) {
-            const posts = document.querySelectorAll('.post');
-            const postsHeading = document.getElementById('postsHeading');
-
-            posts.forEach(post => {
-                if (category === 'all' || post.getAttribute('data-category').toLowerCase() === category.toLowerCase()) {
-                    post.style.display = 'block';
-                } else {
-                    post.style.display = 'none';
-                }
-            });
-
-            // Update the heading based on the selected category
-            if (category === 'all') {
-                postsHeading.textContent = 'All Posts';
-            } else {
-                postsHeading.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Posts';
-            }
-
-            return false; // Prevent default link behavior
-        }
-
         function toggleCommentForm(postId) {
             const commentForm = document.getElementById(`comment-form-${postId}`);
             const commentsSection = document.getElementById(`comments-${postId}`);
