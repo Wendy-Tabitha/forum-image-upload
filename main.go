@@ -18,7 +18,7 @@ func main() {
 	// Serve static files from the "static" directory
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", handler)
-	
+
 	// Initialize the database
 	handlers.InitDB()
 
