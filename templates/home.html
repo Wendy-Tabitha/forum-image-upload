@@ -24,11 +24,11 @@
             <div class="profile-icon" style="position: relative;">
                 <a href="/profile" class="material-icons"
                     style="font-size:30px; color: #4A7C8C; margin-top: 10px; vertical-align: middle;">person</a>
-                <div class="logout-dropdown">
-                    <a href="/logout" class="logout-link">Logout</a>
                 </div>
-            </div>
-            <a href="#" class="auth-button create-post" onclick="toggleCreatePost()">Create Post</a>
+                <a href="#" class="auth-button create-post" onclick="toggleCreatePost()">Create Post</a>
+                <a href="/logout" class="logout-icon" title="Logout">
+                    <i class="fas fa-sign-out-alt" style="font-size: 24px; color: #4A7C8C; margin-top: 10px;"></i>
+                </a>
             {{else}}
             <a href="/login" class="auth-button login">Login</a>
             <a href="/register" class="auth-button register">Register</a>
