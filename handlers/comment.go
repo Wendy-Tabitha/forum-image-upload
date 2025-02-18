@@ -241,7 +241,6 @@ var GetUserIdFromSession = func(w http.ResponseWriter, r *http.Request) string {
 			MaxAge:   -1,
 			HttpOnly: true,
 		})
-		http.Error(w, "Unauthorized: Invalid session", http.StatusUnauthorized)
 		return ""
 	} else if err != nil {
 		http.Error(w, "Database error", http.StatusInternalServerError)
