@@ -24,11 +24,11 @@
             <div class="profile-icon" style="position: relative;">
                 <a href="/profile" class="material-icons"
                     style="font-size:30px; color: #4A7C8C; margin-top: 10px; vertical-align: middle;">person</a>
-                </div>
-                <a href="#" class="auth-button create-post" onclick="toggleCreatePost()">Create Post</a>
-                <a href="/logout" class="logout-icon" title="Logout">
-                    <i class="fas fa-sign-out-alt" style="font-size: 24px; color: #4A7C8C; margin-top: 10px;"></i>
-                </a>
+            </div>
+            <a href="#" class="auth-button create-post" onclick="toggleCreatePost()">Create Post</a>
+            <a href="/logout" class="logout-icon" title="Logout">
+                <i class="fas fa-sign-out-alt" style="font-size: 24px; color: #4A7C8C; margin-top: 10px;"></i>
+            </a>
             {{else}}
             <a href="/login" class="auth-button login">Login</a>
             <a href="/register" class="auth-button register">Register</a>
@@ -393,36 +393,29 @@
             sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
         }
 
-        document.querySelector('.profile-icon').addEventListener('mouseenter', function() {
-            document.querySelector('.logout-dropdown').style.display = 'block';
-        });
-        document.querySelector('.profile-icon').addEventListener('mouseleave', function() {
-            document.querySelector('.logout-dropdown').style.display = 'none';
-        });
+        // Function to validate the comment form
+        function validateCommentForm(event, form) {
+            // Get the textarea element
+            const textarea = form.querySelector('textarea[name="content"]');
 
-         // Function to validate the comment form
-    function validateCommentForm(event, form) {
-        // Get the textarea element
-        const textarea = form.querySelector('textarea[name="content"]');
-        
-        // Check if the textarea is empty or contains only whitespace
-        if (!textarea.value.trim()) {
-            // Prevent form submission
-            event.preventDefault();
-            
-            // Alert the user
-            alert("Comment cannot be empty. Please write something before submitting.");
-            
-            // Focus on the textarea so the user can continue typing
-            textarea.focus();
-            
-            // Return false to prevent form submission
-            return false;
+            // Check if the textarea is empty or contains only whitespace
+            if (!textarea.value.trim()) {
+                // Prevent form submission
+                event.preventDefault();
+
+                // Alert the user
+                alert("Comment cannot be empty. Please write something before submitting.");
+
+                // Focus on the textarea so the user can continue typing
+                textarea.focus();
+
+                // Return false to prevent form submission
+                return false;
+            }
+
+            // If the textarea is not empty, allow form submission
+            return true;
         }
-        
-        // If the textarea is not empty, allow form submission
-        return true;
-    }
     </script>
 </body>
 

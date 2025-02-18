@@ -323,29 +323,6 @@ header {
     transition: color 0.3s ease;
 }
 
-.logout-dropdown {
-    display: none;
-    position: absolute;
-    right: 0;
-    background: rgb(204, 204, 204);
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    z-index: 100;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.logout-dropdown a {
-    background-color: rgb(204, 204, 204);
-    color: var(--text-color);
-    border-radius: 8px;
-    text-align: center;
-    text-decoration: none !important;
-    display: block;
-    padding: 8px 0;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
 .sidebar h3 {
     color: var(--primary-color);
     margin-bottom: 15px;
@@ -685,12 +662,16 @@ img {
 }
 
 .hamburger {
-    display: none; /* Hide by default */
+    display: none;
+    /* Hide by default */
     cursor: pointer;
     padding: 10px;
-    margin-right: 10px; /* Add spacing between hamburger and logo */
-    font-size: 24px; /* Adjust icon size */
-    color: var(--primary-color); /* Icon color */
+    margin-right: 10px;
+    /* Add spacing between hamburger and logo */
+    font-size: 24px;
+    /* Adjust icon size */
+    color: var(--primary-color);
+    /* Icon color */
 }
 
 .error-container {
@@ -752,26 +733,34 @@ img {
 @media (max-width: 768px) {
     header {
         display: flex;
-        flex-direction: row; /* Align items horizontally */
-        align-items: center; /* Center items vertically */
-        justify-content: space-between; /* Space items evenly */
+        flex-direction: row;
+        /* Align items horizontally */
+        align-items: center;
+        /* Center items vertically */
+        justify-content: space-between;
+        /* Space items evenly */
     }
 
     .hamburger {
-        display: block; /* Show the hamburger menu */
+        display: block;
+        /* Show the hamburger menu */
         margin-bottom: 8px;
     }
 
     .logo {
-        text-align: left; /* Align logo to the left */
-        margin-bottom: 8px; /* Remove bottom margin */
+        text-align: left;
+        /* Align logo to the left */
+        margin-bottom: 8px;
+        /* Remove bottom margin */
     }
 
     nav {
         display: flex;
         flex-direction: row;
-        align-items: center; /* Center nav items vertically */
-        gap: 10px; /* Add spacing between nav items */
+        align-items: center;
+        /* Center nav items vertically */
+        gap: 10px;
+        /* Add spacing between nav items */
     }
 
     nav a {
@@ -805,6 +794,7 @@ img {
     .post {
         flex: 1 1 100%;
     }
+
     .sidebar.active {
         display: block;
     }
