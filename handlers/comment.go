@@ -140,7 +140,10 @@ var GetCommentsForPost = func(postID int) ([]Comment, error) {
 			c.content,
 			c.created_at,
 			u.username,
-			c.parent_id
+			c.parent_id,
+			(SELECT COUNT(*) FROM comments r WHERE r.parent_id = c.id) as reply_count,
+			(SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.is_like = 1) as like_count,
+			(SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.is_like = 0) as dislike_count
 		FROM comments c
 		JOIN users u ON c.user_id = u.id
 		WHERE c.post_id = ? AND c.parent_id IS NULL
@@ -162,6 +165,9 @@ var GetCommentsForPost = func(postID int) ([]Comment, error) {
 			&comment.CreatedAt,
 			&comment.Username,
 			&comment.ParentID,
+			&comment.ReplyCount,
+			&comment.LikeCount,
+			&comment.DislikeCount,
 		)
 		if err != nil {
 			return nil, err
@@ -190,7 +196,10 @@ var GetCommentReplies = func(commentID int) ([]Comment, error) {
 			c.content,
 			c.created_at,
 			u.username,
-			c.parent_id
+			c.parent_id,
+			0 as reply_count,
+			(SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.is_like = 1) as like_count,
+			(SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.is_like = 0) as dislike_count
 		FROM comments c
 		JOIN users u ON c.user_id = u.id
 		WHERE c.parent_id = ?
@@ -212,6 +221,9 @@ var GetCommentReplies = func(commentID int) ([]Comment, error) {
 			&reply.CreatedAt,
 			&reply.Username,
 			&reply.ParentID,
+			&reply.ReplyCount,
+			&reply.LikeCount,
+			&reply.DislikeCount,
 		)
 		if err != nil {
 			return nil, err
