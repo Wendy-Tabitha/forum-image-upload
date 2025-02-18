@@ -125,6 +125,49 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			post.Categories = ""
 		}
+
+		commentQuery := `
+			SELECT c.id, c.content, u.username, c.created_at, 
+       COALESCE(clike.like_count, 0) AS like_count,
+       COALESCE(cdislike.dislike_count, 0) AS dislike_count
+FROM comments c
+JOIN users u ON c.user_id = u.id
+LEFT JOIN (
+    SELECT comment_id, COUNT(CASE WHEN is_like = 1 THEN 1 END) AS like_count
+    FROM comment_likes
+    GROUP BY comment_id
+) clike ON c.id = clike.comment_id
+LEFT JOIN (
+    SELECT comment_id, COUNT(CASE WHEN is_like = 0 THEN 1 END) AS dislike_count
+    FROM comment_likes
+    GROUP BY comment_id
+) cdislike ON c.id = cdislike.comment_id
+WHERE c.post_id = ?
+ORDER BY c.created_at DESC
+
+		`
+		commentRows, err := db.Query(commentQuery, post.ID)
+		if err != nil {
+			log.Printf("Error fetching comments: %v", err)
+			RenderError(w, r, "Error fetching comments", http.StatusInternalServerError)
+			return
+		}
+		defer commentRows.Close()
+
+		var comments []Comment
+		for commentRows.Next() {
+			var comment Comment
+			err := commentRows.Scan(&comment.ID, &comment.Content, &comment.Username, &comment.CreatedAt, &comment.LikeCount, &comment.DislikeCount)
+			if err != nil {
+				log.Printf("Error scanning comment: %v", err)
+				RenderError(w, r, "Error scanning comments", http.StatusInternalServerError)
+				return
+			}
+			comments = append(comments, comment)
+		}
+		
+
+		post.Comments = comments
 		posts = append(posts, post)
 	}
 
