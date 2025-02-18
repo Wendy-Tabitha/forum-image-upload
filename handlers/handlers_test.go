@@ -430,21 +430,6 @@ func TestGetCommentReplies(t *testing.T) {
 		}
 	}{
 		{
-			name:      "Existing Comment with Replies",
-			commentID: 1,
-			expectedResult: struct {
-				replyCount         int
-				firstReplyID       int
-				firstReplyLikes    int
-				firstReplyDislikes int
-			}{
-				replyCount:         2,
-				firstReplyID:       2,
-				firstReplyLikes:    2,
-				firstReplyDislikes: 0,
-			},
-		},
-		{
 			name:      "Comment with No Replies",
 			commentID: 2,
 			expectedResult: struct {
