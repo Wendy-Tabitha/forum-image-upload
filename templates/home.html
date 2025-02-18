@@ -132,7 +132,7 @@
                         <!-- Comment Form -->
                         <div class="comment-form" id="comment-form-{{.ID}}" style="display: none;">
                             {{if $.IsLoggedIn}}
-                            <form method="POST" action="/comment">
+                            <form method="POST" action="/comment" onsubmit="return validateCommentForm(event, this)">
                                 <input type="hidden" name="post_id" value="{{.ID}}">
                                 <textarea name="content" placeholder="Write your comment..." required></textarea>
                                 <button type="submit">Comment</button>
@@ -399,6 +399,30 @@
         document.querySelector('.profile-icon').addEventListener('mouseleave', function() {
             document.querySelector('.logout-dropdown').style.display = 'none';
         });
+
+         // Function to validate the comment form
+    function validateCommentForm(event, form) {
+        // Get the textarea element
+        const textarea = form.querySelector('textarea[name="content"]');
+        
+        // Check if the textarea is empty or contains only whitespace
+        if (!textarea.value.trim()) {
+            // Prevent form submission
+            event.preventDefault();
+            
+            // Alert the user
+            alert("Comment cannot be empty. Please write something before submitting.");
+            
+            // Focus on the textarea so the user can continue typing
+            textarea.focus();
+            
+            // Return false to prevent form submission
+            return false;
+        }
+        
+        // If the textarea is not empty, allow form submission
+        return true;
+    }
     </script>
 </body>
 
