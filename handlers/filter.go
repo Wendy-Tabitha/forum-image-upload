@@ -62,6 +62,10 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get the category from the query parameters
 	category := r.URL.Query().Get("category")
+	if category == "" {
+		RenderError(w, r, "Error: Category parameter is missing or incomplete.", http.StatusBadRequest)
+		return
+	}
 
 	// Validate the category
 	if category != "all" && category != "" && !isValidCategory(category) {
