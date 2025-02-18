@@ -754,6 +754,10 @@ img {
         /* Remove bottom margin */
     }
 
+    .auth-button.create-post {
+        padding: 5px;
+    }
+
     nav {
         display: flex;
         flex-direction: row;
@@ -808,5 +812,8 @@ img {
 
     .logo {
         margin-bottom: 8px;
+    }
+    .auth-button.create-post {
+        padding: 5px;
     }
 }
