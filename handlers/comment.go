@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -18,7 +17,13 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	postID := r.FormValue("post_id")
-	PostID, _ = strconv.Atoi(postID)
+	postIDInt, err := strconv.Atoi(postID)
+	if err != nil {
+		http.Error(w, "Invalid post ID format", http.StatusBadRequest)
+		return
+	} else {
+		PostID = postIDInt
+	}
 	content := r.FormValue("content")
 	parentID := r.FormValue("parent_id") // New: Get parent comment ID if this is a reply
 	userID := GetUserIdFromSession(w, r) // Fetch user ID from session
@@ -39,31 +44,9 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Convert postID to int
-	postIDInt, err := strconv.Atoi(postID)
-	if err != nil {
-		log.Printf("Error converting post_id to int: %v", err)
-		http.Error(w, "Invalid post ID format", http.StatusBadRequest)
-		return
-	}
-
-	// Verify that the post exists
-	var exists bool
-	err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id = ?)", postIDInt).Scan(&exists)
-	if err != nil {
-		log.Printf("Error checking post existence: %v", err)
-		http.Error(w, "Database error", http.StatusInternalServerError)
-		return
-	}
-	if !exists {
-		http.Error(w, "Post not found", http.StatusNotFound)
-		return
-	}
-
 	// Start a transaction
 	tx, err := db.Begin()
 	if err != nil {
-		log.Printf("Error starting transaction: %v", err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
@@ -73,29 +56,22 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		// Convert parentID to int
 		parentIDInt, err := strconv.Atoi(parentID)
 		if err != nil {
-			log.Printf("Error converting parent_id to int: %v", err)
 			http.Error(w, "Invalid parent comment ID format", http.StatusBadRequest)
 			return
 		}
 
-		// Verify that the parent comment exists and belongs to the same post
+		// Verify that the parent comment exists
 		var parentPostID int
 		err = db.QueryRow("SELECT post_id FROM comments WHERE id = ?", parentIDInt).Scan(&parentPostID)
 		if err == sql.ErrNoRows {
 			http.Error(w, "Parent comment not found", http.StatusNotFound)
 			return
 		} else if err != nil {
-			log.Printf("Error checking parent comment: %v", err)
 			http.Error(w, "Database error", http.StatusInternalServerError)
 			return
 		}
 
-		if parentPostID != postIDInt {
-			http.Error(w, "Parent comment does not belong to the specified post", http.StatusBadRequest)
-			return
-		}
-
-		// This is a reply to another comment
+		// Proceed with inserting the reply since the parent comment exists
 		_, err = tx.Exec(
 			"INSERT INTO comments (post_id, user_id, content, parent_id, created_at) VALUES (?, ?, ?, ?, ?)",
 			postIDInt, userID, content, parentIDInt, time.Now(),
@@ -120,7 +96,6 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Commit the transaction
 	if err = tx.Commit(); err != nil {
-		log.Printf("Error committing transaction: %v", err)
 		http.Error(w, "Error committing transaction", http.StatusInternalServerError)
 		return
 	}
