@@ -1,4 +1,4 @@
-module github.com/Wendy-Tabitha/discussion
+module forum
 
 go 1.23
 

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Wendy-Tabitha/discussion/handlers"
+	"forum/handlers"
 )
 
 func main() {
@@ -23,8 +23,8 @@ func main() {
 	handlers.InitDB()
 
 	// Start the server
-	log.Println("Server is running on http://localhost:8080")
-	err := http.ListenAndServe(":8080", nil)
+	log.Println("Server is running on http://localhost:8081")
+	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
