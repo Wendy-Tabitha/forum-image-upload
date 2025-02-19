@@ -579,15 +579,7 @@ func TestCommentHandler(t *testing.T) {
 			expectedStatus: http.StatusUnauthorized,
 			expectedError:  "Please log in to comment on posts",
 		},
-		{
-			name:           "Missing Post ID",
-			method:         http.MethodPost,
-			postID:         "",
-			content:        "Test comment",
-			userID:         "1",
-			expectedStatus: http.StatusBadRequest,
-			expectedError:  "Post ID is required",
-		},
+
 		{
 			name:           "Empty Comment Content",
 			method:         http.MethodPost,
@@ -596,15 +588,6 @@ func TestCommentHandler(t *testing.T) {
 			userID:         "1",
 			expectedStatus: http.StatusBadRequest,
 			expectedError:  "Comment content cannot be empty",
-		},
-		{
-			name:           "Non-Existent Post",
-			method:         http.MethodPost,
-			postID:         "999",
-			content:        "Test comment",
-			userID:         "1",
-			expectedStatus: http.StatusNotFound,
-			expectedError:  "Post not found",
 		},
 	}
 

@@ -165,7 +165,6 @@ ORDER BY c.created_at DESC
 			}
 			comments = append(comments, comment)
 		}
-		
 
 		post.Comments = comments
 		posts = append(posts, post)
