@@ -41,6 +41,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		var existingUsername string
+		err := db.QueryRow("SELECT username FROM users WHERE username = ?", username).Scan(&existingUsername)
+		if err == nil {
+			RenderError(w, r, "Username already taken", http.StatusBadRequest)
+			return
+		}
+
 		// Validate email format
 		emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
 		if !emailRegex.MatchString(email) {
@@ -62,7 +69,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Check if email already exists
 		var exists bool
-		err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)", email).Scan(&exists)
+		err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)", email).Scan(&exists)
 		if err != nil {
 			log.Printf("Error checking email existence: %v", err)
 			RenderError(w, r, "database_error", http.StatusInternalServerError)
