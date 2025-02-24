@@ -54,23 +54,27 @@
                 <li><a href="/filter?category=beauty">Beauty</a></li>
                 <li><a href="/filter?category=jobs">Jobs</a></li>
             </ul>
-            <div class="sidebar-footer">
+            <!-- <div class="sidebar-footer">
                 {{if .IsLoggedIn}}
                 <a href="/logout" class="logout-link">Logout</a>
                 {{end}}
-            </div>
+            </div> -->
         </aside>
         <main>
             {{if .IsLoggedIn}}
             <div id="createPostForm" style="display: none;">
                 <h1>Create a New Post</h1>
-                <form method="POST" action="/post" onsubmit="return validateCategories()">
+                <form method="POST" action="/post" enctype="multipart/form-data" onsubmit="return validateCategories()">
                     <label for="title">Title:</label>
                     <input type="text" id="title" name="title" required>
                     <br>
 
                     <label for="content">Content:</label>
                     <textarea id="content" name="content" required></textarea>
+                    <br>
+
+                    <label for="image">Image:</label>
+                    <input type="file" id="image" name="image" accept="image/jpeg, image/png, image/gif">
                     <br>
 
                     <label for="category">Category:</label>
@@ -112,6 +116,9 @@
                     <strong>
                         <p>{{.Username}}</p>
                     </strong>
+                    {{if .ImagePath}} <!-- Display image if it exists -->
+                    <img src="{{.ImagePath}}" alt="Post Image" class="post-image">
+                    {{end}}
                     <h3>{{.Title}}</h3>
                     <p>{{.Content}}</p>
                     <p class="categories">Categories: <span>{{.Categories}}</span></p>

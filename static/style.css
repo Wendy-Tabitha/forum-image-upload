@@ -120,9 +120,24 @@ nav a:hover {
     flex: 1 1 calc(33.333% - 16px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 16px;
+    padding-top: 10px;
+    margin-top: 10px;
     background-color: white;
     border-radius: 5px;
     transition: transform 0.3s ease;
+}
+
+.post-image {
+    width: 1000px;
+    /* Set the desired width */
+    height: 500px;
+    /* Set the desired height */
+    object-fit: cover;
+    /* This will ensure the image covers the area without distortion */
+    display: block;
+    /* Ensures that the image is treated as a block element */
+    margin: 0 auto;
+    /* Center the image horizontally */
 }
 
 .post:hover {
@@ -438,6 +453,8 @@ main {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-top: 100px;
+    height: 600px;
+    overflow-y: scroll;
 }
 
 #createPostForm h1 {
@@ -538,6 +555,7 @@ main {
 
 .checkbox-group input[type="checkbox"] {
     margin-right: 8px;
+    margin-top: 0;
 }
 
 .comments-section {
@@ -813,6 +831,7 @@ img {
     .logo {
         margin-bottom: 8px;
     }
+
     .auth-button.create-post {
         padding: 5px;
     }
