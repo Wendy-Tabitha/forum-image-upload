@@ -116,11 +116,11 @@
                     <strong>
                         <p>{{.Username}}</p>
                     </strong>
+                    <h3>{{.Title}}</h3>
+                    <p>{{.Content}}</p>
                     {{if .ImagePath}} <!-- Display image if it exists -->
                     <img src="{{.ImagePath}}" alt="Post Image" class="post-image">
                     {{end}}
-                    <h3>{{.Title}}</h3>
-                    <p>{{.Content}}</p>
                     <p class="categories">Categories: <span>{{.Categories}}</span></p>
                     <div class="post-actions">
                         <button class="like-button" data-post-id="{{.ID}}" onclick="toggleLike('{{.ID}}', true)">
