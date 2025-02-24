@@ -128,6 +128,7 @@ nav a:hover {
 }
 
 .post-image {
+    border-radius: 10px;
     width: 1000px;
     /* Set the desired width */
     height: 500px;
