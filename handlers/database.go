@@ -30,6 +30,7 @@ func InitDB() {
         user_id TEXT,  -- Changed from INTEGER to TEXT for UUID
         title TEXT,
         content TEXT,
+        image_path TEXT, -- New column for image path
         created_at DATETIME DEFAULT (DATETIME('now', 'localtime')), -- Store in local time (EAT)
         FOREIGN KEY(user_id) REFERENCES users(id)
     );

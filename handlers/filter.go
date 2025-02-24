@@ -75,7 +75,7 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Query to fetch posts based on the selected category
 	query := `
-		SELECT p.id, p.title, p.content, GROUP_CONCAT(pc.category) as categories, 
+		SELECT p.id, p.title, p.content, p.image_path, GROUP_CONCAT(pc.category) as categories, 
 		u.username, p.created_at, 
 		COALESCE(l.like_count, 0) AS like_count,
 		COALESCE(l.dislike_count, 0) AS dislike_count
@@ -114,7 +114,7 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var post Post
 		var categories sql.NullString
-		err := rows.Scan(&post.ID, &post.Title, &post.Content, &categories, &post.Username, &post.CreatedAt, &post.LikeCount, &post.DislikeCount)
+		err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.ImagePath, &categories, &post.Username, &post.CreatedAt, &post.LikeCount, &post.DislikeCount)
 		if err != nil {
 			log.Printf("Error scanning post: %v", err)
 			RenderError(w, r, "Error scanning posts", http.StatusInternalServerError)

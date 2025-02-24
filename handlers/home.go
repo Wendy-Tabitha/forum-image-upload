@@ -7,15 +7,11 @@ import (
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	// if r.URL.Path != "/" {
-	// 	renderError(w, r, "Page not found", http.StatusNotFound)
-	// 	return
-	// }
 	userID := GetUserIdFromSession(w, r)
 
 	// Query to fetch all posts along with user info, categories, like counts, and comments
 	rows, err := db.Query(`
-		SELECT p.id, p.title, p.content, GROUP_CONCAT(pc.category) as categories, 
+		SELECT p.id, p.title, p.content, p.image_path, GROUP_CONCAT(pc.category) as categories, 
 		u.username, p.created_at, 
 		COALESCE(l.like_count, 0) AS like_count,
 		COALESCE(l.dislike_count, 0) AS dislike_count
@@ -41,16 +37,18 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var post Post
 		var categories sql.NullString
-		if err := rows.Scan(
+		err := rows.Scan(
 			&post.ID,
 			&post.Title,
 			&post.Content,
+			&post.ImagePath, // New field for image path
 			&categories,
 			&post.Username,
 			&post.CreatedAt,
 			&post.LikeCount,
 			&post.DislikeCount,
-		); err != nil {
+		)
+		if err != nil {
 			RenderError(w, r, "Error scanning posts", http.StatusInternalServerError)
 			return
 		}

@@ -14,6 +14,7 @@ type Post struct {
 	UserID       string
 	Title        string
 	Content      string
+	ImagePath    string // New field for image path
 	Categories   string
 	Username     string
 	CreatedAt    string
