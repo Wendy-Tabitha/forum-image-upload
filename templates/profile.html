@@ -30,6 +30,9 @@
                 <article class="post">
                     <h3>{{.Title}}</h3>
                     <p class="post-content">{{.Content}}</p>
+                    {{if .ImagePath}} <!-- Display image if it exists -->
+                    <img src="{{.ImagePath}}" alt="Post Image" class="post-image">
+                    {{end}}
                     <div class="post-meta">
                         {{if .Categories}}
                         <span class="categories"><i class="fas fa-tags"></i> {{.Categories}}</span>
@@ -52,6 +55,9 @@
                 <article class="post">
                     <h3>{{.Title}}</h3>
                     <p class="post-content">{{.Content}}</p>
+                    {{if .ImagePath}} <!-- Display image if it exists -->
+                    <img src="{{.ImagePath}}" alt="Post Image" class="post-image">
+                    {{end}}
                     <div class="post-meta">
                         <span class="author"><i class="fas fa-user"></i> {{.Username}}</span>
                         {{if .Categories}}
