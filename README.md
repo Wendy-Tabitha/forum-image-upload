@@ -1,9 +1,11 @@
-# Web Forum Project
+# Image-upload
 
 ## Project Overview
-This project is designed to create a web forum that allows users to communicate by creating posts and comments. Key features include liking/disliking posts and comments, associating categories with posts, and filtering posts based on various criteria.
+This project is designed to create a web forum that allows users to communicate by creating posts and comments. Registered users have the possibility to create a post containing an image as well as text.
 
 ## Features
+- When viewing the post, users and guests should see the image associated to it.
+- in this project you have to handle at least JPEG, PNG and GIF types.
 - **User Authentication**: Secure access with user login and registration.
   - **Registration**: Users can register by providing a unique email, username, and password. Passwords are encrypted before storage.
   - **Login**: Users can log in to access the forum. Sessions are managed using cookies with an expiration date.
@@ -34,7 +36,7 @@ This project is designed to create a web forum that allows users to communicate 
 To install this project, follow these steps:
 1. Clone the repository: 
    ```bash
-   git clone https://learn.zone01kisumu.ke/git/hanapiko/forum
+   git clone https://learn.zone01kisumu.ke/git/weakinyi/forum-image-upload
 2. Navigate to the project directory:
    ```bash
    cd forum
