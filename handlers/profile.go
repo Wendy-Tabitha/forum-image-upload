@@ -19,6 +19,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			p.id, 
 			p.title, 
 			p.content, 
+			p.image_path,
 			GROUP_CONCAT(DISTINCT pc.category) as categories, 
 			u.username, 
 			p.created_at,
@@ -45,6 +46,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			&post.ID,
 			&post.Title,
 			&post.Content,
+			&post.ImagePath,
 			&categories,
 			&post.Username,
 			&post.CreatedAt,
@@ -64,7 +66,8 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		SELECT 
 			p.id, 
 			p.title, 
-			p.content, 
+			p.content,
+			p.image_path, 
 			GROUP_CONCAT(DISTINCT pc.category) as categories, 
 			u.username, 
 			p.created_at,
@@ -92,6 +95,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			&post.ID,
 			&post.Title,
 			&post.Content,
+			&post.ImagePath,
 			&categories,
 			&post.Username,
 			&post.CreatedAt,
@@ -121,6 +125,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		"Email":        email,
 		"CreatedPosts": userPosts,
 		"LikedPosts":   userLikedPosts,
+
 	}
 
 	tmpl, err := template.ParseFiles("templates/profile.html")
