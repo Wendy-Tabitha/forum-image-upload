@@ -131,7 +131,7 @@ nav a:hover {
     border-radius: 10px;
     width: 100%; /* Set width to 100% to fit the container */
     height: auto; /* Maintain aspect ratio */
-    max-width: 700px; /* Set a maximum width */
+    max-width: 1000px; /* Set a maximum width */
     max-height: 700px; /* Set a maximum height */
     object-fit: fill; /* Cover the area without stretching */
     display: block; /* Ensures that the image is treated as a block element */
