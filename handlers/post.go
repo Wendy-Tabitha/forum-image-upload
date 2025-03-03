@@ -78,7 +78,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Save the image to the uploads directory
-			imagePath = "uploads/" + title + ext // Simple naming, consider using UUIDs for uniqueness
+			imagePath = "uploads/" + header.Filename// Simple naming, consider using UUIDs for uniqueness
 			out, err := os.Create(imagePath)
 			if err != nil {
 				log.Printf("Error saving image: %v", err) // Log the specific error
