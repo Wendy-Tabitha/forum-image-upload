@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 )
 
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +42,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	var userPosts []Post
 	for createdPosts.Next() {
 		var post Post
+		var createdAt time.Time
 		var categories string
 		err := createdPosts.Scan(
 			&post.ID,
@@ -49,7 +51,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			&post.ImagePath,
 			&categories,
 			&post.Username,
-			&post.CreatedAt,
+			&createdAt,
 			&post.LikeCount,
 			&post.DislikeCount,
 		)
@@ -57,6 +59,11 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error scanning post: %v", err)
 			continue
 		}
+
+		// Set the CreatedAt field and the human-readable time
+		post.CreatedAt = createdAt
+		post.CreatedAtHuman = TimeAgo(createdAt)
+
 		post.Categories = categories
 		userPosts = append(userPosts, post)
 	}
@@ -90,6 +97,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	var userLikedPosts []Post
 	for likedPosts.Next() {
 		var post Post
+		var createdAt time.Time
 		var categories string
 		err := likedPosts.Scan(
 			&post.ID,
@@ -98,7 +106,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			&post.ImagePath,
 			&categories,
 			&post.Username,
-			&post.CreatedAt,
+			&createdAt,
 			&post.LikeCount,
 			&post.DislikeCount,
 		)
@@ -106,6 +114,11 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error scanning liked post: %v", err)
 			continue
 		}
+
+		// Set the CreatedAt field and the human-readable time
+		post.CreatedAt = createdAt
+		post.CreatedAtHuman = TimeAgo(createdAt)
+		
 		post.Categories = categories
 		userLikedPosts = append(userLikedPosts, post)
 	}

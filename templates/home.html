@@ -112,7 +112,7 @@
                 {{if .Posts}}
                 {{range .Posts}}
                 <div class="post" data-category="{{.Categories}}">
-                    <p class="posted-on">Posted on: {{.CreatedAt}}</p>
+                    <p class="posted-on">{{.CreatedAtHuman}}</p>
                     <strong>
                         <p>{{.Username}}</p>
                     </strong>
@@ -155,7 +155,7 @@
                             <div class="comment-content">{{.Content}}</div>
                             <div class="comment-meta">
                                 <span class="comment-author">Posted by {{.Username}}</span>
-                                <span class="comment-date">{{.CreatedAt}}</span>
+                                <span class="comment-date">{{.CreatedAtHuman}}</span>
                             </div>
                             {{if $.IsLoggedIn}}
                             <div class="comment-actions">
@@ -190,7 +190,7 @@
                                     <div class="comment-content">{{.Content}}</div>
                                     <div class="comment-meta">
                                         <span class="comment-author">Posted by {{.Username}}</span>
-                                        <span class="comment-date">{{.CreatedAt}}</span>
+                                        <span class="comment-date">{{.CreatedAtHuman}}</span>
                                     </div>
                                     {{if $.IsLoggedIn}}
                                     <div class="comment-actions">

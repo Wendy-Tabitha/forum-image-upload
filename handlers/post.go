@@ -95,7 +95,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert the new post into the database
-	result, err := db.Exec("INSERT INTO posts (user_id, title, content, image_path) VALUES (?, ?, ?, ?)", userID, title, content, imagePath)
+    result, err := db.Exec("INSERT INTO posts (user_id, title, content, image_path, created_at) VALUES (?, ?, ?, ?, ?)", userID, title, content, imagePath, time.Now())
 	if err != nil {
 		log.Printf("Error creating post: %v", err)
 		RenderError(w, r, "Error creating post", http.StatusInternalServerError)

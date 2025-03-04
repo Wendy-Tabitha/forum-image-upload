@@ -1,5 +1,7 @@
 package handlers
 
+import "time"
+
 // User represents a user in the system
 type User struct {
 	ID       string
@@ -17,7 +19,8 @@ type Post struct {
 	ImagePath    string // New field for image path
 	Categories   string
 	Username     string
-	CreatedAt    string
+	CreatedAt    time.Time
+	CreatedAtHuman string
 	LikeCount    int // Number of likes
 	DislikeCount int
 	Comments     []Comment // List of comments for this post
@@ -36,7 +39,8 @@ type Comment struct {
 	PostID       int
 	UserID       string // Changed from int to string to match User.ID
 	Content      string
-	CreatedAt    string
+	CreatedAt    time.Time // Original time
+	CreatedAtHuman string   // Human-readable time
 	Username     string
 	ParentID     *int      // Parent comment ID, null for top-level comments
 	Replies      []Comment // List of reply comments

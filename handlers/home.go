@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,17 +35,19 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	var posts []Post
+	// Inside the HomeHandler or wherever you retrieve posts
 	for rows.Next() {
 		var post Post
+		var createdAt time.Time
 		var categories sql.NullString
 		err := rows.Scan(
 			&post.ID,
 			&post.Title,
 			&post.Content,
-			&post.ImagePath, // New field for image path
+			&post.ImagePath,
 			&categories,
 			&post.Username,
-			&post.CreatedAt,
+			&createdAt,
 			&post.LikeCount,
 			&post.DislikeCount,
 		)
@@ -57,6 +60,10 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			post.Categories = ""
 		}
+
+		// Set the CreatedAt field and the human-readable time
+		post.CreatedAt = createdAt
+		post.CreatedAtHuman = TimeAgo(createdAt)
 
 		// Fetch comments for this post
 		comments, err := GetCommentsForPost(post.ID)

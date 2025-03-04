@@ -132,12 +132,13 @@ var GetCommentsForPost = func(postID int) ([]Comment, error) {
 	var comments []Comment
 	for rows.Next() {
 		var comment Comment
+		var createdAt time.Time
 		err := rows.Scan(
 			&comment.ID,
 			&comment.PostID,
 			&comment.UserID,
 			&comment.Content,
-			&comment.CreatedAt,
+			&createdAt,
 			&comment.Username,
 			&comment.ParentID,
 			&comment.ReplyCount,
@@ -147,6 +148,10 @@ var GetCommentsForPost = func(postID int) ([]Comment, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		// Set the CreatedAt field and the human-readable time
+		comment.CreatedAt = createdAt
+		comment.CreatedAtHuman = TimeAgo(createdAt)
 
 		// Get replies for this comment
 		replies, err := GetCommentReplies(comment.ID)
@@ -188,12 +193,13 @@ var GetCommentReplies = func(commentID int) ([]Comment, error) {
 	var replies []Comment
 	for rows.Next() {
 		var reply Comment
+		var createdAt time.Time
 		err := rows.Scan(
 			&reply.ID,
 			&reply.PostID,
 			&reply.UserID,
 			&reply.Content,
-			&reply.CreatedAt,
+			&createdAt,
 			&reply.Username,
 			&reply.ParentID,
 			&reply.ReplyCount,
@@ -203,6 +209,11 @@ var GetCommentReplies = func(commentID int) ([]Comment, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		// Set the CreatedAt field and the human-readable time
+		reply.CreatedAt = createdAt
+		reply.CreatedAtHuman = TimeAgo(createdAt)
+		
 		replies = append(replies, reply)
 	}
 
