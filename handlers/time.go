@@ -14,13 +14,28 @@ func TimeAgo(createdAt time.Time) string {
 	case diff < time.Second:
 		return "just now"
 	case diff < time.Minute:
-		return fmt.Sprintf("%d seconds ago", int(diff.Seconds()))
+		seconds := int(diff.Seconds())
+		if seconds == 1 {
+			return "1 second ago"
+		}
+		return fmt.Sprintf("%d seconds ago", seconds)
 	case diff < time.Hour:
-		return fmt.Sprintf("%d minutes ago", int(diff.Minutes()))
+		minutes := int(diff.Minutes())
+		if minutes == 1 {
+			return "1 minute ago"
+		}
+		return fmt.Sprintf("%d minutes ago", minutes)
 	case diff < 24*time.Hour:
-		return fmt.Sprintf("%d hours ago", int(diff.Hours()))
+		hours := int(diff.Hours())
+		if hours == 1 {
+			return "1 hour ago"
+		}
+		return fmt.Sprintf("%d hours ago", hours)
 	default:
 		days := int(diff.Hours() / 24)
+		if days == 1 {
+			return "1 day ago"
+		}
 		return fmt.Sprintf("%d days ago", days)
 	}
 }
