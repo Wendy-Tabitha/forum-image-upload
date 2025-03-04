@@ -129,13 +129,13 @@ nav a:hover {
 
 .post-image {
     border-radius: 10px;
-    width: 100%; /* Set width to 100% to fit the container */
-    height: auto; /* Maintain aspect ratio */
-    max-width: 1000px; /* Set a maximum width */
-    max-height: 700px; /* Set a maximum height */
-    object-fit: fill; /* Cover the area without stretching */
-    display: block; /* Ensures that the image is treated as a block element */
-    margin: 0 auto; /* Center the image horizontally */
+    width: 100%;
+    height: auto;
+    max-width: 1000px;
+    max-height: 800px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
 }
 
 .post:hover {
