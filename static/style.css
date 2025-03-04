@@ -59,9 +59,7 @@ nav a:hover {
     padding: 10px;
     padding-top: 33px;
     padding-bottom: 33px;
-    background-color: white;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .profile-header h1 {
@@ -297,7 +295,7 @@ header {
 }
 
 .profile-container {
-    display: flex;
+    /* display: flex; */
     margin-top: 100px;
     max-width: 1200px;
     margin-left: auto;
