@@ -213,7 +213,7 @@ var GetCommentReplies = func(commentID int) ([]Comment, error) {
 		// Set the CreatedAt field and the human-readable time
 		reply.CreatedAt = createdAt
 		reply.CreatedAtHuman = TimeAgo(createdAt)
-		
+
 		replies = append(replies, reply)
 	}
 

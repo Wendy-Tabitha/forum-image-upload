@@ -118,7 +118,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		// Set the CreatedAt field and the human-readable time
 		post.CreatedAt = createdAt
 		post.CreatedAtHuman = TimeAgo(createdAt)
-		
+
 		post.Categories = categories
 		userLikedPosts = append(userLikedPosts, post)
 	}
