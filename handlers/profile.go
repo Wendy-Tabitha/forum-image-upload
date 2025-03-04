@@ -125,7 +125,6 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		"Email":        email,
 		"CreatedPosts": userPosts,
 		"LikedPosts":   userLikedPosts,
-
 	}
 
 	tmpl, err := template.ParseFiles("templates/profile.html")
