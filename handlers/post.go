@@ -78,16 +78,16 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Save the image to the uploads directory
-			imagePath = "uploads/" + header.Filename // Simple naming, consider using UUIDs for uniqueness
+			imagePath = "uploads/" + header.Filename
 			out, err := os.Create(imagePath)
 			if err != nil {
-				log.Printf("Error saving image: %v", err) // Log the specific error
+				log.Printf("Error saving image: %v", err)
 				RenderError(w, r, "Error saving image", http.StatusInternalServerError)
 				return
 			}
 			defer out.Close()
 			if _, err := io.Copy(out, file); err != nil {
-				log.Printf("Error writing image to file: %v", err) // Log the specific error
+				log.Printf("Error writing image to file: %v", err)
 				RenderError(w, r, "Error writing image to file", http.StatusInternalServerError)
 				return
 			}
