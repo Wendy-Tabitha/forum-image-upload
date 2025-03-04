@@ -39,7 +39,7 @@ To install this project, follow these steps:
    git clone https://learn.zone01kisumu.ke/git/weakinyi/forum-image-upload
 2. Navigate to the project directory:
    ```bash
-   cd forum
+   cd forum-image-upload
    ```
 3. Install the required dependencies:
    ```bash
