@@ -113,8 +113,19 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 	var posts []Post
 	for rows.Next() {
 		var post Post
+		var createdAt time.Time
 		var categories sql.NullString
-		err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.ImagePath, &categories, &post.Username, &post.CreatedAt, &post.LikeCount, &post.DislikeCount)
+		err := rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.ImagePath,
+			&categories,
+			&post.Username,
+			&createdAt,
+			&post.LikeCount,
+			&post.DislikeCount,
+		)
 		if err != nil {
 			log.Printf("Error scanning post: %v", err)
 			RenderError(w, r, "Error scanning posts", http.StatusInternalServerError)
@@ -125,6 +136,10 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			post.Categories = ""
 		}
+
+		// Set the CreatedAt field and the human-readable time
+		post.CreatedAt = createdAt
+		post.CreatedAtHuman = TimeAgo(createdAt)
 
 		commentQuery := `
 			SELECT c.id, c.content, u.username, c.created_at, 
